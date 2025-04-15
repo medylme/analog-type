@@ -57,20 +57,16 @@ const SliderHandle: Component<SliderHandleProps> = (props) => {
   });
 
   return (
-    <button
-      type="button"
-      disabled={!props.enabled}
-      class={`absolute w-5 h-5 rounded-full border-2 translate-y-1.5 focus:outline-none -ml-3 ${
-        props.enabled
-          ? "bg-white border-blurple"
-          : "bg-stone-400 border-stone-600 cursor-not-allowed"
-      }`}
+    <div
+      ref={handleRef}
+      class="absolute w-4 h-4 bg-white rounded-full top-1 -ml-2 shadow-md translate-y-1"
       style={{
         left: `${props.position * 100}%`,
         cursor: props.enabled ? "pointer" : "not-allowed",
+        opacity: props.enabled ? "1" : "0.5",
       }}
       onMouseDown={handleMouseDown}
-    ></button>
+    ></div>
   );
 };
 
