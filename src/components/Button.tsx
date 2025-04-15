@@ -16,10 +16,10 @@ const Button: Component<ButtonProps> = (props) => {
 
   return (
     <button
-      class={`px-4 py-2 rounded-full transition-colors duration-200 ${
+      class={`rounded-full px-4 py-2 transition-colors duration-200 ${
         local.selected
           ? "bg-blurple text-white"
-          : "bg-stone-700 text-stone-300 cursor-pointer hover:bg-blurple/50"
+          : "hover:bg-blurple/50 cursor-pointer bg-stone-700 text-stone-300"
       } ${local.class || ""}`}
       {...others}
     >

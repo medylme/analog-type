@@ -64,13 +64,13 @@ const KeyboardDebug: Component = () => {
   });
 
   return (
-    <div class="fixed bottom-0 right-0 bg-black/80 text-white text-xs p-2 max-w-md max-h-60 overflow-auto">
-      <div class="flex justify-between items-center mb-2">
+    <div class="fixed right-0 bottom-0 max-h-60 max-w-md overflow-auto bg-black/80 p-2 text-xs text-white">
+      <div class="mb-2 flex items-center justify-between">
         <h3 class="font-bold">Keyboard Debug</h3>
         <div class="flex gap-2">
           <button
             onClick={() => setExpanded(!expanded())}
-            class="bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded text-xs"
+            class="rounded bg-gray-800 px-2 py-1 text-xs hover:bg-gray-700"
           >
             {expanded() ? "Collapse" : "Expand"}
           </button>
@@ -81,7 +81,7 @@ const KeyboardDebug: Component = () => {
       <div class="mb-2">
         <div class="flex items-center gap-2">
           <div
-            class={`w-2 h-2 rounded-full ${
+            class={`h-2 w-2 rounded-full ${
               isConnected() ? "bg-green-500" : "bg-red-500"
             }`}
           ></div>
@@ -104,9 +104,9 @@ const KeyboardDebug: Component = () => {
 
       {/* Logs */}
       {expanded() && (
-        <div class="border-t border-gray-700 pt-2 mt-2">
-          <div class="font-bold mb-1">Event Log:</div>
-          <div class="space-y-1 max-h-40 overflow-y-auto">
+        <div class="mt-2 border-t border-gray-700 pt-2">
+          <div class="mb-1 font-bold">Event Log:</div>
+          <div class="max-h-40 space-y-1 overflow-y-auto">
             {logs().map((log) => (
               <div class="border-l-2 border-blue-500 pl-2">{log}</div>
             ))}

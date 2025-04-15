@@ -9,7 +9,9 @@ export interface AnalogReport {
 declare global {
   interface Navigator {
     hid: {
-      requestDevice(options: { filters: Array<{ vendorId: number; usagePage: number }> }): Promise<HIDDevice[]>;
+      requestDevice(options: {
+        filters: Array<{ vendorId: number; usagePage: number }>;
+      }): Promise<HIDDevice[]>;
     };
   }
 
@@ -184,37 +186,40 @@ class WebHIDService {
     if (!this.device) return;
 
     // This is a workaround for when onanalogreport doesn't properly trigger
-    this.device.addEventListener("inputreport", (event: HIDInputReportEvent) => {
-      // The data structure is that there are pairs of 2 bytes for the hid id and one byte for the analog value repeated over and over
-      const data = event.data;
-      const analogData = [];
-      for (let i = 0; i < data.byteLength; i += 3) {
-        const key = data.getUint16(i);
-        const value = data.getUint8(i + 2) / 255;
+    this.device.addEventListener(
+      "inputreport",
+      (event: HIDInputReportEvent) => {
+        // The data structure is that there are pairs of 2 bytes for the hid id and one byte for the analog value repeated over and over
+        const data = event.data;
+        const analogData = [];
+        for (let i = 0; i < data.byteLength; i += 3) {
+          const key = data.getUint16(i);
+          const value = data.getUint8(i + 2) / 255;
 
-        if (value === 0) {
-          break;
+          if (value === 0) {
+            break;
+          }
+          analogData.push({
+            key,
+            value,
+          });
         }
-        analogData.push({
-          key,
-          value,
-        });
-      }
 
-      if (analogData.length > 0) {
-        console.log(`Received input report with ${analogData.length} keys`);
-      }
+        if (analogData.length > 0) {
+          console.log(`Received input report with ${analogData.length} keys`);
+        }
 
-      // Try both methods to ensure the callback is triggered
-      if (this.device && this.device.onanalogreport) {
-        this.device.onanalogreport({ data: analogData });
-      } else if (this.currentAnalogCallback) {
-        // Use the stored callback if onanalogreport doesn't work
-        this.currentAnalogCallback({ data: analogData });
-      } else {
-        console.warn("No analog report event listener available");
+        // Try both methods to ensure the callback is triggered
+        if (this.device && this.device.onanalogreport) {
+          this.device.onanalogreport({ data: analogData });
+        } else if (this.currentAnalogCallback) {
+          // Use the stored callback if onanalogreport doesn't work
+          this.currentAnalogCallback({ data: analogData });
+        } else {
+          console.warn("No analog report event listener available");
+        }
       }
-    });
+    );
   }
 
   setAnalogReportListener(callback: (report: AnalogReport) => void) {
@@ -223,7 +228,10 @@ class WebHIDService {
       return;
     }
 
-    console.log("Setting analog report listener on device:", this.device.productName);
+    console.log(
+      "Setting analog report listener on device:",
+      this.device.productName
+    );
 
     // Store the callback for the inputreport event handler
     this.currentAnalogCallback = callback;

@@ -20,10 +20,14 @@ const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
   const { settings, updateSettings } = useTyping();
-  
+
   // Local state for displaying values during dragging
-  const [displayMin, setDisplayMin] = createSignal(settings().targetBracket?.min || 0);
-  const [displayMax, setDisplayMax] = createSignal(settings().targetBracket?.max || 1);
+  const [displayMin, setDisplayMin] = createSignal(
+    settings().targetBracket?.min || 0
+  );
+  const [displayMax, setDisplayMax] = createSignal(
+    settings().targetBracket?.max || 1
+  );
 
   const handleMinChange = (newMin: number) => {
     // For display only during dragging
@@ -44,13 +48,13 @@ const Settings: Component = () => {
     // Update the app-level signal
     setCurrentMaxValue(newMax);
   };
-  
+
   const handleMinDragEnd = (newMin: number) => {
     // Update actual settings when drag ends
     const currentMax = settings().targetBracket?.max || 1;
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
-    
+
     updateSettings({
       ...settings(),
       targetBracket: {
@@ -59,7 +63,7 @@ const Settings: Component = () => {
         max: currentMax,
       },
     });
-    
+
     // Reset the app-level signals when drag ends
     setCurrentMinValue(undefined);
     setCurrentMaxValue(undefined);
@@ -70,7 +74,7 @@ const Settings: Component = () => {
     const currentMin = settings().targetBracket?.min || 0;
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
-    
+
     updateSettings({
       ...settings(),
       targetBracket: {
@@ -79,12 +83,12 @@ const Settings: Component = () => {
         max: newMax,
       },
     });
-    
+
     // Reset the app-level signals when drag ends
     setCurrentMinValue(undefined);
     setCurrentMaxValue(undefined);
   };
-  
+
   // Keep local display values in sync with settings
   if (displayMin() !== settings().targetBracket?.min) {
     setDisplayMin(settings().targetBracket?.min || 0);
@@ -94,11 +98,11 @@ const Settings: Component = () => {
   }
 
   return (
-    <div class="bg-stone-800 rounded-lg p-4 mb-6 text-white">
-      <div class="flex flex-col md:flex-row gap-6">
+    <div class="mb-6 rounded-lg bg-stone-800 p-4 text-white">
+      <div class="flex flex-col gap-6 md:flex-row">
         {/* Mode Selection */}
         <div class="flex-1">
-          <h3 class="text-lg font-medium mb-2">Test Mode</h3>
+          <h3 class="mb-2 text-lg font-medium">Test Mode</h3>
           <div class="flex gap-2">
             <Button
               selected={settings().mode === "time"}
@@ -132,8 +136,8 @@ const Settings: Component = () => {
           class="flex-1 data-[visible=false]:hidden"
           data-visible={settings().mode === "time"}
         >
-          <h3 class="text-lg font-medium mb-2">Time (seconds)</h3>
-          <div class="flex gap-2 flex-wrap">
+          <h3 class="mb-2 text-lg font-medium">Time (seconds)</h3>
+          <div class="flex flex-wrap gap-2">
             {timeOptions.map((time) => (
               <Button
                 selected={settings().timeSeconds === time}
@@ -156,8 +160,8 @@ const Settings: Component = () => {
           class="flex-1 data-[visible=false]:hidden"
           data-visible={settings().mode === "words"}
         >
-          <h3 class="text-lg font-medium mb-2">Word Count</h3>
-          <div class="flex gap-2 flex-wrap">
+          <h3 class="mb-2 text-lg font-medium">Word Count</h3>
+          <div class="flex flex-wrap gap-2">
             {wordCountOptions.map((count) => (
               <Button
                 selected={settings().wordCount === count}
@@ -177,7 +181,7 @@ const Settings: Component = () => {
 
         {/* Target Bracket */}
         <div class="flex-1">
-          <div class="flex items-center gap-2 mb-2">
+          <div class="mb-2 flex items-center gap-2">
             <h3 class="text-lg font-medium">Agony Mode</h3>
             <Tooltip
               position="bottom"
@@ -186,10 +190,10 @@ const Settings: Component = () => {
             >
               ?
             </Tooltip>
-            <label class="inline-flex items-center cursor-pointer">
+            <label class="inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
-                class="sr-only peer"
+                class="peer sr-only"
                 checked={settings().targetBracket?.enabled || false}
                 onChange={(e) => {
                   updateSettings({
@@ -202,24 +206,22 @@ const Settings: Component = () => {
                   });
                 }}
               />
-              <div class="relative w-9 h-5 bg-stone-700 peer-checked:bg-blurple rounded-full peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+              <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
             </label>
           </div>
           <div class="py-2">
             <div class="relative h-8">
               {/* Slider track */}
-              <div class="absolute w-full h-2 rounded-full top-3 bg-stone-700"></div>
+              <div class="absolute top-3 h-2 w-full rounded-full bg-stone-700"></div>
 
               {settings().targetBracket?.enabled ? (
                 <>
                   {/* Filled area between handles in bracket mode */}
                   <div
-                    class="absolute h-2 rounded-full top-3 bg-blurple"
+                    class="bg-blurple absolute top-3 h-2 rounded-full"
                     style={{
                       left: `${displayMin() * 100}%`,
-                      width: `${
-                        (displayMax() - displayMin()) * 100
-                      }%`,
+                      width: `${(displayMax() - displayMin()) * 100}%`,
                     }}
                   ></div>
 
@@ -240,7 +242,7 @@ const Settings: Component = () => {
                   />
 
                   {/* Bracket value indicators */}
-                  <div class="flex justify-between text-xs text-stone-300 -translate-y-2">
+                  <div class="flex -translate-y-2 justify-between text-xs text-stone-300">
                     <span>Min: {displayMin().toFixed(2)}</span>
                     <span>Max: {displayMax().toFixed(2)}</span>
                   </div>
@@ -249,7 +251,7 @@ const Settings: Component = () => {
                 <>
                   {/* Filled area for actuation point mode */}
                   <div
-                    class="absolute h-2 rounded-full top-3 bg-blurple"
+                    class="bg-blurple absolute top-3 h-2 rounded-full"
                     style={{
                       width: `${displayMin() * 100}%`,
                     }}
@@ -280,9 +282,7 @@ const Settings: Component = () => {
 
                   {/* Actuation point value indicator */}
                   <div class="flex justify-center text-xs text-stone-300">
-                    <span>
-                      Actuation: {displayMin().toFixed(2)}
-                    </span>
+                    <span>Actuation: {displayMin().toFixed(2)}</span>
                   </div>
                 </>
               )}

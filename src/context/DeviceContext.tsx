@@ -57,4 +57,4 @@ export function DeviceProvider(props: { children: JSX.Element }) {
 
 export function useDevice() {
   return useContext(DeviceContext);
-} 
+}

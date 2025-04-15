@@ -1,4 +1,4 @@
-import englishWords from '../static/languages/english.json';
+import englishWords from "../static/languages/english.json";
 
 interface LanguageData {
   name: string;
@@ -20,7 +20,7 @@ class WordService {
    * Generates a random set of words with the specified count
    */
   generateWordSet(count: number): string {
-    if (count <= 0) return '';
+    if (count <= 0) return "";
 
     const selectedWords: string[] = [];
 
@@ -33,7 +33,7 @@ class WordService {
     // Save the current word set
     this.currentWordSet = selectedWords;
 
-    return selectedWords.join(' ');
+    return selectedWords.join(" ");
   }
 
   /**
@@ -54,7 +54,7 @@ class WordService {
     // Save the current word set
     this.currentWordSet = selectedWords;
 
-    return selectedWords.join(' ');
+    return selectedWords.join(" ");
   }
 
   /**
@@ -62,7 +62,7 @@ class WordService {
    * infinite typing tests to append as the user types
    */
   appendMoreWords(count: number = 20): string {
-    if (count <= 0) return '';
+    if (count <= 0) return "";
 
     const additionalWords: string[] = [];
 
@@ -75,16 +75,16 @@ class WordService {
     // Add to the current word set
     this.currentWordSet = [...this.currentWordSet, ...additionalWords];
 
-    return additionalWords.join(' ');
+    return additionalWords.join(" ");
   }
 
   /**
    * Get the current word set as a string
    */
   getCurrentWordSet(): string {
-    return this.currentWordSet.join(' ');
+    return this.currentWordSet.join(" ");
   }
 }
 
 export const wordService = new WordService();
-export default wordService; 
+export default wordService;

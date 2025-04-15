@@ -1,5 +1,5 @@
-import { Component, Index, createMemo, Show, mergeProps } from 'solid-js';
-import './styles.css';
+import { Component, Index, createMemo, Show, mergeProps } from "solid-js";
+import "./styles.css";
 
 export type OdometerProps = {
   number: number;
@@ -14,11 +14,11 @@ export type OdometerProps = {
 export const Odometer: Component<OdometerProps> = (inProps) => {
   const props = mergeProps({ digits: 0, width: 0.9 }, inProps);
   const chars = createMemo(() => {
-    let c = props.number.toString().split('');
+    let c = props.number.toString().split("");
     if (c.length > props.digits) {
       c = c.slice(-props.digits);
     }
-    while (c.length < props.digits) c.unshift('0');
+    while (c.length < props.digits) c.unshift("0");
     return c;
   });
   return (
@@ -28,8 +28,8 @@ export const Odometer: Component<OdometerProps> = (inProps) => {
         [`${props.class}`]: !!props.class,
       }}
       style={{
-        'font-size': `${props.size}px`,
-        'line-height': `${props.size}px`,
+        "font-size": `${props.size}px`,
+        "line-height": `${props.size}px`,
       }}
     >
       <Index each={chars()}>
@@ -46,8 +46,8 @@ export const Odometer: Component<OdometerProps> = (inProps) => {
               <div
                 style={{
                   transform: `translateY(-${digit()}em)`,
-                  'animation-name': `slide${digit()}`,
-                  'animation-duration': `${
+                  "animation-name": `slide${digit()}`,
+                  "animation-duration": `${
                     props.speed - (chars().length - i * 50)
                   }ms`,
                 }}

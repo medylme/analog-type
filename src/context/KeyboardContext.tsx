@@ -225,7 +225,7 @@ export function KeyboardProvider(props: { children: JSX.Element }) {
       console.error("Invalid analog report structure:", report);
       return;
     }
-    
+
     console.log(
       `Handling report with ${report.data.length} keys:`,
       report.data
@@ -246,7 +246,9 @@ export function KeyboardProvider(props: { children: JSX.Element }) {
         console.log(`Updating key ${keyToUpdate.name} to ${value.toFixed(2)}`);
       } else {
         // Log unknown key codes in a more readable format
-        console.warn(`Unknown key code: 0x${keyCode.toString(16)} (decimal: ${keyCode})`);
+        console.warn(
+          `Unknown key code: 0x${keyCode.toString(16)} (decimal: ${keyCode})`
+        );
       }
     });
 

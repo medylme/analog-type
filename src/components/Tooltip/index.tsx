@@ -37,8 +37,8 @@ const Tooltip: Component<TooltipProps> = (props) => {
       >
         <Show when={isVisible()}>
           <div
-            class={`tooltip tooltip-${position} absolute z-50 bg-stone-900/95 text-white p-3 rounded-md shadow-lg text-pretty`}
-            style={{ "width": width }}
+            class={`tooltip tooltip-${position} absolute z-50 rounded-md bg-stone-900/95 p-3 text-pretty text-white shadow-lg`}
+            style={{ width: width }}
             role="tooltip"
             aria-live="polite"
           >

@@ -11,17 +11,29 @@ export interface TypingMetrics {
 }
 
 const Metrics: Component = () => {
-  const { metrics, isTestActive, isTestComplete, settings, remainingTime, startTime } = useTyping();
+  const {
+    metrics,
+    isTestActive,
+    isTestComplete,
+    settings,
+    remainingTime,
+    startTime,
+  } = useTyping();
   const isVisible = () => isTestActive() || isTestComplete();
   const [elapsedTime, setElapsedTime] = createSignal<number>(0);
 
   // Update elapsed time every second when in words mode and test is active
   createEffect(() => {
-    if (settings().mode === "words" && startTime() !== null && isTestActive() && !isTestComplete()) {
+    if (
+      settings().mode === "words" &&
+      startTime() !== null &&
+      isTestActive() &&
+      !isTestComplete()
+    ) {
       const timer = setInterval(() => {
         setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
       }, 1000);
-      
+
       return () => clearInterval(timer);
     }
   });
@@ -62,15 +74,15 @@ const Metrics: Component = () => {
         appear={true}
       >
         {isVisible() && (
-          <div class="bg-stone-800 rounded-lg p-4 mt-4 text-white">
+          <div class="mt-4 rounded-lg bg-stone-800 p-4 text-white">
             {/* Timer Component */}
             {getTimerText() && (
-              <div class="text-center mb-4">
+              <div class="mb-4 text-center">
                 <span class="text-xl font-bold">{getTimerText()}</span>
               </div>
             )}
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
               <div class="flex flex-col items-center">
                 <span class="text-3xl font-bold text-green-400">
                   <Odometer
@@ -113,7 +125,7 @@ const Metrics: Component = () => {
               </div>
 
               <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-purple-400 flex flex-row items-start gap-1">
+                <span class="flex flex-row items-start gap-1 text-3xl font-bold text-purple-400">
                   <Odometer
                     number={metrics().accuracy}
                     speed={50}

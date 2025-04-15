@@ -13,15 +13,19 @@ import KeyboardVisualizer from "./components/KeyboardVisualizer";
 import { MetaProvider, Title } from "@solidjs/meta";
 
 // Create signals for min/max values at the app level to be shared
-export const [currentMinValue, setCurrentMinValue] = createSignal<number | undefined>(undefined);
-export const [currentMaxValue, setCurrentMaxValue] = createSignal<number | undefined>(undefined);
+export const [currentMinValue, setCurrentMinValue] = createSignal<
+  number | undefined
+>(undefined);
+export const [currentMaxValue, setCurrentMaxValue] = createSignal<
+  number | undefined
+>(undefined);
 
 const Main: Component = () => {
   const { isTestActive, isTestComplete, resetTest } = useTyping();
   const { isConnected } = useDevice();
 
   return (
-    <div class="min-h-screen bg-stone-900 py-8 font-display select-none">
+    <div class="font-display min-h-screen bg-stone-900 py-8 select-none">
       <Title>Analog-ony</Title>
       <Show when={isConnected()}>
         <Header />
@@ -34,13 +38,13 @@ const Main: Component = () => {
 
           {/* Main content with transitions */}
           <div class="transition-container">
-            <div class="flex flex-col items-center justify-center w-full">
-              <div class="flex flex-row items-center justify-center w-full gap-16">
+            <div class="flex w-full flex-col items-center justify-center">
+              <div class="flex w-full flex-row items-center justify-center gap-16">
                 {/* Keyboard Visualizer - pass the current min/max values */}
-                <KeyboardVisualizer 
+                <KeyboardVisualizer
                   variant="single"
-                  minValue={currentMinValue()} 
-                  maxValue={currentMaxValue()} 
+                  minValue={currentMinValue()}
+                  maxValue={currentMaxValue()}
                 />
                 {/* Typing test */}
                 <TypeRacer />
@@ -67,7 +71,7 @@ const Main: Component = () => {
               {(isTestActive() || isTestComplete()) && (
                 <div class="mt-6 text-center">
                   <button
-                    class="bg-blurple hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg"
+                    class="bg-blurple rounded-lg px-6 py-2 font-bold text-white hover:bg-blue-600"
                     onClick={resetTest}
                   >
                     {isTestComplete() ? "New Test" : "Reset"}

@@ -95,7 +95,7 @@ const TypeRacer: Component = () => {
       if (targetBracket.enabled) {
         // Get the current state for this key
         const keyState = keyActuationStates()[key.code];
-        
+
         // If key is currently ignored because it went past max, check if it's been released
         if (keyState?.wasAboveMax && key.value < 0.05) {
           // Key has been released, remove ignore flag
@@ -117,7 +117,7 @@ const TypeRacer: Component = () => {
             // Actuate the key
             actuationsToTrigger.push(key.code);
             lastActuated.add(key.code);
-            
+
             // Mark this key as actuated
             setKeyActuationStates((prev) => ({
               ...prev,
@@ -128,21 +128,25 @@ const TypeRacer: Component = () => {
                 wasAboveMax: false,
               },
             }));
-            console.log(`Key ${key.code.toString(16)} triggered at ${key.value.toFixed(2)}`);
+            console.log(
+              `Key ${key.code.toString(16)} triggered at ${key.value.toFixed(2)}`
+            );
           }
-          
+
           // Check if an actuated key has gone above max
           if (key.value > targetBracket.max && keyState?.isActuated) {
             // Key has gone past max, "undo" the actuation
-            console.log(`Key ${key.code.toString(16)} exceeded max: ${key.value.toFixed(2)}, undoing actuation`);
-            
+            console.log(
+              `Key ${key.code.toString(16)} exceeded max: ${key.value.toFixed(2)}, undoing actuation`
+            );
+
             // Remove from actuated keys set
             setLastActuatedKeys((prev) => {
               const newSet = new Set(prev);
               newSet.delete(key.code);
               return newSet;
             });
-            
+
             // Mark this key as having gone above max (to ignore until reset)
             setKeyActuationStates((prev) => ({
               ...prev,
@@ -153,7 +157,7 @@ const TypeRacer: Component = () => {
                 wasAboveMax: true,
               },
             }));
-            
+
             // Trigger a backspace to undo this key's input
             triggerBackspace();
           }
@@ -866,10 +870,10 @@ const TypeRacer: Component = () => {
         appear={true}
       >
         {!isTestComplete() && (
-          <div class="max-w-2xl mx-auto p-4">
+          <div class="mx-auto max-w-2xl p-4">
             <div
               ref={textContainerRef}
-              class="text-2xl font-mono leading-relaxed cursor-text relative"
+              class="relative cursor-text font-mono text-2xl leading-relaxed"
               style="height: 7.5rem; overflow: hidden; white-space: pre-wrap; word-break: break-word;"
               onClick={() => {
                 if (!isTestComplete() && inputRef) {
@@ -880,7 +884,7 @@ const TypeRacer: Component = () => {
             >
               <div
                 ref={textDisplayRef}
-                class="transition-transform duration-200 transition-filter filter-transition"
+                class="transition-filter filter-transition transition-transform duration-200"
                 style={{
                   transform: `translateY(-${scrollOffset()}px)`,
                   filter: isWindowFocused() ? "none" : "blur(4px)",
@@ -901,7 +905,7 @@ const TypeRacer: Component = () => {
               </div>
               {!isTestComplete() && (
                 <div
-                  class="absolute w-0.5 bg-blurple transition-all duration-100"
+                  class="bg-blurple absolute w-0.5 transition-all duration-100"
                   style={{
                     left: `${cursorPosition().left}px`,
                     top: `${cursorPosition().top}px`,
@@ -919,7 +923,7 @@ const TypeRacer: Component = () => {
 
               {/* Unfocused overlay */}
               <div
-                class="absolute inset-0 flex items-center justify-center backdrop-blur-none text-white font-bold text-xl z-10 data-[visible=true]:opacity-100 data-[visible=false]:opacity-0 data-[visible=true]:pointer-events-auto data-[visible=false]:pointer-events-none transition-opacity duration-300 font-display"
+                class="font-display absolute inset-0 z-10 flex items-center justify-center text-xl font-bold text-white backdrop-blur-none transition-opacity duration-300 data-[visible=false]:pointer-events-none data-[visible=false]:opacity-0 data-[visible=true]:pointer-events-auto data-[visible=true]:opacity-100"
                 data-visible={!isWindowFocused()}
               >
                 Window Unfocused

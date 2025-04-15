@@ -59,7 +59,7 @@ const SliderHandle: Component<SliderHandleProps> = (props) => {
   return (
     <div
       ref={handleRef}
-      class="absolute w-4 h-4 bg-white rounded-full top-1 -ml-2 shadow-md translate-y-1"
+      class="absolute top-1 -ml-2 h-4 w-4 translate-y-1 rounded-full bg-white shadow-md"
       style={{
         left: `${props.position * 100}%`,
         cursor: props.enabled ? "pointer" : "not-allowed",

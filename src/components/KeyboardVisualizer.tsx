@@ -17,7 +17,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
   if (props.variant === "single") {
     return (
       <Show when={!isTestComplete()}>
-        <div class="flex flex-row items-center justify-center p-4 h-20 ">
+        <div class="flex h-20 flex-row items-center justify-center p-4">
           {/* Get the most pressed key or default to 0 */}
           {(() => {
             const mostPressedKey = getMostPressedKey();
@@ -39,15 +39,15 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
             return (
               <div class="flex items-center gap-4">
                 {/* Vertical bar - inverted to show key going down */}
-                <div class="h-26 w-6 bg-stone-800 rounded-full relative">
+                <div class="relative h-26 w-6 rounded-full bg-stone-800">
                   <div
-                    class="absolute top-0 w-full bg-blurple rounded-full transition-all duration-100 ease-in-out"
+                    class="bg-blurple absolute top-0 w-full rounded-full transition-all duration-100 ease-in-out"
                     style={{ height: `${keyValue * 100}%` }}
                   ></div>
 
                   {/* Key cap visual element */}
                   <div
-                    class="absolute w-full bg-stone-800 rounded-full transition-all duration-100 ease-in-out z-10"
+                    class="absolute z-10 w-full rounded-full bg-stone-800 transition-all duration-100 ease-in-out"
                     style={{
                       height: "0px",
                       top: `${keyValue * 100}%`,
@@ -63,9 +63,9 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                       transform: "translateY(-50%)",
                     }}
                   >
-                    <div class="flex items-center px-2 py-1 rounded-md">
+                    <div class="flex items-center rounded-md px-2 py-1">
                       <div
-                        class="w-0 h-0 mr-2 border-y-[6px] border-y-transparent border-r-[12px] data-[active=true]:border-r-blurple data-[incorrect=true]:border-r-red-500 border-r-stone-800"
+                        class="data-[active=true]:border-r-blurple mr-2 h-0 w-0 border-y-[6px] border-r-[12px] border-y-transparent border-r-stone-800 data-[incorrect=true]:border-r-red-500"
                         data-active={
                           targetBracket.enabled
                             ? keyValue >= targetBracket.min &&
@@ -76,7 +76,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                           targetBracket.enabled && keyValue > targetBracket.max
                         }
                       ></div>
-                      <span class="text-xs text-white font-bold">
+                      <span class="text-xs font-bold text-white">
                         {keyValue.toFixed(2)}
                       </span>
                     </div>
@@ -94,10 +94,10 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                         }}
                       >
                         <div class="flex items-center gap-2">
-                          <span class="text-xs text-white font-bold">
+                          <span class="text-xs font-bold text-white">
                             {targetBracket.min.toFixed(2)}
                           </span>
-                          <div class="w-4 h-1 bg-stone-600 rounded-full"></div>
+                          <div class="h-1 w-4 rounded-full bg-stone-600"></div>
                         </div>
                       </div>
                       {/* Max line */}
@@ -109,16 +109,16 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                         }}
                       >
                         <div class="flex items-center gap-2">
-                          <span class="text-xs text-white font-bold">
+                          <span class="text-xs font-bold text-white">
                             {targetBracket.max.toFixed(2)}
                           </span>
-                          <div class="w-4 h-1 bg-stone-600 rounded-full"></div>
+                          <div class="h-1 w-4 rounded-full bg-stone-600"></div>
                         </div>
                       </div>
 
                       {/* Target bracket area */}
                       <div
-                        class="absolute top-0 w-full bg-blurple/40 transition-all duration-100 ease-in-out overflow-hidden rounded-full"
+                        class="bg-blurple/40 absolute top-0 w-full overflow-hidden rounded-full transition-all duration-100 ease-in-out"
                         style={{
                           top: `${targetBracket.min * 100}%`,
                           height: `${
@@ -138,7 +138,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                         }}
                       >
                         <div class="flex items-center gap-2">
-                          <span class="text-xs text-white font-bold">
+                          <span class="text-xs font-bold text-white">
                             {targetBracket.min.toFixed(2)}
                           </span>
                         </div>
@@ -146,7 +146,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
                       {/* Actuation line across bar */}
                       <div
-                        class="absolute w-full h-0.5 bg-blurple/50 transition-all duration-100 ease-in-out"
+                        class="bg-blurple/50 absolute h-0.5 w-full transition-all duration-100 ease-in-out"
                         style={{
                           top: `${targetBracket.min * 100}%`,
                         }}
@@ -174,8 +174,8 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
       appear={true}
     >
       <Show when={isTestActive()}>
-        <div class="p-6 flex flex-col items-center">
-          <div class="relative w-[750px] max-w-5xl mx-auto h-[300px] rounded-lg p-4 mb-4">
+        <div class="flex flex-col items-center p-6">
+          <div class="relative mx-auto mb-4 h-[300px] w-[750px] max-w-5xl rounded-lg p-4">
             {/* Static keyboard layout */}
             {keyboardLayout.map((key) => {
               const keySize = 2.8; // Smaller base size
@@ -187,7 +187,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
               return (
                 <div
-                  class="absolute flex flex-col items-center justify-start border border-stone-600/20 rounded-sm overflow-hidden transition-all duration-75"
+                  class="absolute flex flex-col items-center justify-start overflow-hidden rounded-sm border border-stone-600/20 transition-all duration-75"
                   style={{
                     width: `${(key.width || 1) * keySize}rem`,
                     height: `${keyHeight}rem`,
@@ -198,7 +198,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                 >
                   {/* Fill container from top to bottom */}
                   <div
-                    class="absolute top-0 left-0 right-0 bg-blurple transition-all duration-75 z-0"
+                    class="bg-blurple absolute top-0 right-0 left-0 z-0 transition-all duration-75"
                     style={{
                       height: `${keyValue * 100}%`,
                       opacity: `${keyValue * 100}%`,
@@ -206,9 +206,9 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                   ></div>
 
                   {/* Key label centered */}
-                  <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+                  <div class="absolute inset-0 z-10 flex flex-col items-center justify-center">
                     <p
-                      class="text-white font-medium text-sm transition-all duration-300 ease-in-out data-[active=true]:-translate-y-1.5"
+                      class="text-sm font-medium text-white transition-all duration-300 ease-in-out data-[active=true]:-translate-y-1.5"
                       data-active={keyValue > 0}
                     >
                       {key.name}
@@ -216,7 +216,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
                     {/* Depth counter with opacity transition */}
                     <p
-                      class="absolute text-white text-xs translate-y-2"
+                      class="absolute translate-y-2 text-xs text-white"
                       style={{
                         opacity: keyValue > 0 ? 0.9 : 0,
                         transition:
