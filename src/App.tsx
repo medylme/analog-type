@@ -7,6 +7,7 @@ import Settings from "./components/Settings";
 import { TypingProvider, useTyping } from "./context/TypingContext";
 import { DeviceProvider, useDevice } from "./context/DeviceContext";
 import { KeyboardProvider } from "./context/KeyboardContext";
+import { StylingProvider, useStyling } from "./context/StylingContext";
 import LandingPage from "./components/LandingPage";
 import Header from "./components/Header";
 import KeyboardVisualizer from "./components/KeyboardVisualizer";
@@ -23,6 +24,7 @@ export const [currentMaxValue, setCurrentMaxValue] = createSignal<
 const Main: Component = () => {
   const { isTestActive, isTestComplete, resetTest } = useTyping();
   const { isConnected } = useDevice();
+  const { showKeyboardVisualizer } = useStyling();
 
   return (
     <div class="font-display min-h-screen bg-stone-900 py-8 select-none">
@@ -51,8 +53,10 @@ const Main: Component = () => {
               </div>
             </div>
 
-            {/* Keyboard Visualizer */}
-            {/* <KeyboardVisualizer variant="keyboard" /> */}
+            {/* Keyboard Visualizer - only show if enabled in settings */}
+            {showKeyboardVisualizer() && (
+              <KeyboardVisualizer variant="keyboard" />
+            )}
 
             {/* Metrics */}
             <Metrics />
@@ -92,7 +96,9 @@ const App: Component = () => {
       <DeviceProvider>
         <KeyboardProvider>
           <TypingProvider>
-            <Main />
+            <StylingProvider>
+              <Main />
+            </StylingProvider>
           </TypingProvider>
         </KeyboardProvider>
       </DeviceProvider>

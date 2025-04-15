@@ -1,5 +1,6 @@
 import { Component, createSignal } from "solid-js";
 import { useTyping } from "../context/TypingContext";
+import { useStyling } from "../context/StylingContext";
 import SliderHandle from "./SliderHandle";
 import Tooltip from "./Tooltip";
 import Button from "./Button";
@@ -20,6 +21,7 @@ const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
   const { settings, updateSettings } = useTyping();
+  const { showKeyboardVisualizer, setShowKeyboardVisualizer } = useStyling();
 
   // Local state for displaying values during dragging
   const [displayMin, setDisplayMin] = createSignal(
@@ -209,6 +211,7 @@ const Settings: Component = () => {
               <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
             </label>
           </div>
+
           <div class="py-2">
             <div class="relative h-8">
               {/* Slider track */}
@@ -287,6 +290,27 @@ const Settings: Component = () => {
                 </>
               )}
             </div>
+          </div>
+
+          {/* Keyboard Visualizer Toggle */}
+          <div class="mb-2 flex items-center gap-2">
+            <h3 class="text-sm font-medium">Show Keyboard</h3>
+            <Tooltip
+              position="bottom"
+              width="200px"
+              content="This might come with a small performance hit."
+            >
+              ?
+            </Tooltip>
+            <label class="inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                class="peer sr-only"
+                checked={showKeyboardVisualizer()}
+                onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
+              />
+              <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+            </label>
           </div>
         </div>
       </div>
