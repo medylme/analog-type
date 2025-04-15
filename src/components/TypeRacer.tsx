@@ -903,7 +903,7 @@ const TypeRacer: Component = () => {
                     </span>
                   ))}
               </div>
-              {!isTestComplete() && (
+              {!isTestComplete() && isWindowFocused() && (
                 <div
                   class="bg-blurple absolute w-0.5 transition-all duration-100"
                   style={{
