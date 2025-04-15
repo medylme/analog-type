@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-import { Show } from "solid-js";
+import { Show, createSignal } from "solid-js";
 import { Transition } from "solid-transition-group";
 import TypeRacer from "./components/TypeRacer";
 import Metrics from "./components/Metrics";
@@ -11,6 +11,10 @@ import LandingPage from "./components/LandingPage";
 import Header from "./components/Header";
 import KeyboardVisualizer from "./components/KeyboardVisualizer";
 import { MetaProvider, Title } from "@solidjs/meta";
+
+// Create signals for min/max values at the app level to be shared
+export const [currentMinValue, setCurrentMinValue] = createSignal<number | undefined>(undefined);
+export const [currentMaxValue, setCurrentMaxValue] = createSignal<number | undefined>(undefined);
 
 const Main: Component = () => {
   const { isTestActive, isTestComplete, resetTest } = useTyping();
@@ -32,8 +36,12 @@ const Main: Component = () => {
           <div class="transition-container">
             <div class="flex flex-col items-center justify-center w-full">
               <div class="flex flex-row items-center justify-center w-full gap-16">
-                {/* Keyboard Visualizer */}
-                <KeyboardVisualizer variant="single" />
+                {/* Keyboard Visualizer - pass the current min/max values */}
+                <KeyboardVisualizer 
+                  variant="single"
+                  minValue={currentMinValue()} 
+                  maxValue={currentMaxValue()} 
+                />
                 {/* Typing test */}
                 <TypeRacer />
               </div>

@@ -3,9 +3,14 @@ import { useTyping } from "../context/TypingContext";
 import { useKeyboard, KeyData } from "../context/KeyboardContext";
 import { Transition } from "solid-transition-group";
 
-const KeyboardVisualizer: Component<{ variant: "single" | "keyboard" }> = (
-  props
-) => {
+interface KeyboardVisualizerProps {
+  variant: "single" | "keyboard";
+  // Add optional min and max props to override settings values during dragging
+  minValue?: number;
+  maxValue?: number;
+}
+
+const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
   const { isTestActive, isTestComplete, settings } = useTyping();
   const { pressedKeys, keyboardLayout, getMostPressedKey } = useKeyboard();
 
@@ -18,7 +23,18 @@ const KeyboardVisualizer: Component<{ variant: "single" | "keyboard" }> = (
             const mostPressedKey = getMostPressedKey();
             const keyValue = mostPressedKey ? mostPressedKey.value : 0;
 
-            const targetBracket = settings().targetBracket;
+            // Get the target bracket from either props (if provided) or settings
+            const targetBracket = {
+              ...settings().targetBracket,
+              min:
+                props.minValue !== undefined
+                  ? props.minValue
+                  : settings().targetBracket?.min || 0,
+              max:
+                props.maxValue !== undefined
+                  ? props.maxValue
+                  : settings().targetBracket?.max || 1,
+            };
 
             return (
               <div class="flex items-center gap-4">

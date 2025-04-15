@@ -3,6 +3,7 @@ import { useTyping } from "../context/TypingContext";
 import SliderHandle from "./SliderHandle";
 import Tooltip from "./Tooltip";
 import Button from "./Button";
+import { setCurrentMinValue, setCurrentMaxValue } from "../App";
 
 export type TestMode = "time" | "words";
 export type TimeOption = 15 | 30 | 60 | 120;
@@ -30,6 +31,8 @@ const Settings: Component = () => {
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
     setDisplayMin(newMin);
+    // Update the app-level signal
+    setCurrentMinValue(newMin);
   };
 
   const handleMaxChange = (newMax: number) => {
@@ -38,6 +41,8 @@ const Settings: Component = () => {
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
     setDisplayMax(newMax);
+    // Update the app-level signal
+    setCurrentMaxValue(newMax);
   };
   
   const handleMinDragEnd = (newMin: number) => {
@@ -54,6 +59,10 @@ const Settings: Component = () => {
         max: currentMax,
       },
     });
+    
+    // Reset the app-level signals when drag ends
+    setCurrentMinValue(undefined);
+    setCurrentMaxValue(undefined);
   };
 
   const handleMaxDragEnd = (newMax: number) => {
@@ -70,6 +79,10 @@ const Settings: Component = () => {
         max: newMax,
       },
     });
+    
+    // Reset the app-level signals when drag ends
+    setCurrentMinValue(undefined);
+    setCurrentMaxValue(undefined);
   };
   
   // Keep local display values in sync with settings
