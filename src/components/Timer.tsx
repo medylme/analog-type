@@ -1,24 +1,8 @@
 import { Component } from "solid-js";
-import { useTyping } from "../context/TypingContext";
 
+// This component is now empty as its functionality has been moved to Metrics
 const Timer: Component = () => {
-  const { settings, remainingTime } = useTyping();
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  return (
-    <>
-      {settings().mode === "time" && remainingTime() !== null && (
-        <div class="text-white text-xl font-bold text-center mb-4">
-          Time: {formatTime(remainingTime())}
-        </div>
-      )}
-    </>
-  );
+  return null;
 };
 
-export default Timer; 
+export default Timer;

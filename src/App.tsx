@@ -10,7 +10,6 @@ import { KeyboardProvider } from "./context/KeyboardContext";
 import LandingPage from "./components/LandingPage";
 import Header from "./components/Header";
 import KeyboardVisualizer from "./components/KeyboardVisualizer";
-import Timer from "./components/Timer";
 import { MetaProvider, Title } from "@solidjs/meta";
 
 const Main: Component = () => {
@@ -32,9 +31,6 @@ const Main: Component = () => {
           {/* Main content with transitions */}
           <div class="transition-container">
             <div class="flex flex-col items-center justify-center w-full">
-              {/* Timer */}
-              <Timer />
-
               <div class="flex flex-row items-center justify-center w-full gap-16">
                 {/* Keyboard Visualizer */}
                 <KeyboardVisualizer variant="single" />

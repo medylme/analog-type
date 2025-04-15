@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, createSignal, createEffect } from "solid-js";
 import { Transition } from "solid-transition-group";
 import { Odometer } from "./Odometer";
 import { useTyping } from "../context/TypingContext";
@@ -11,8 +11,43 @@ export interface TypingMetrics {
 }
 
 const Metrics: Component = () => {
-  const { metrics, isTestActive, isTestComplete } = useTyping();
+  const { metrics, isTestActive, isTestComplete, settings, remainingTime, startTime } = useTyping();
   const isVisible = () => isTestActive() || isTestComplete();
+  const [elapsedTime, setElapsedTime] = createSignal<number>(0);
+
+  // Update elapsed time every second when in words mode and test is active
+  createEffect(() => {
+    if (settings().mode === "words" && startTime() !== null && isTestActive() && !isTestComplete()) {
+      const timer = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  });
+
+  // When test completes, set the final elapsed time
+  createEffect(() => {
+    if (isTestComplete() && startTime() !== null) {
+      // Calculate and freeze the final elapsed time
+      setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
+    }
+  });
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const getTimerText = () => {
+    if (settings().mode === "time" && remainingTime() !== null) {
+      return `Time: ${formatTime(remainingTime())}`;
+    } else if (settings().mode === "words" && startTime() !== null) {
+      return `Time Elapsed: ${formatTime(elapsedTime())}`;
+    }
+    return "";
+  };
 
   return (
     <div class="metrics-wrapper">
@@ -28,6 +63,13 @@ const Metrics: Component = () => {
       >
         {isVisible() && (
           <div class="bg-stone-800 rounded-lg p-4 mt-4 text-white">
+            {/* Timer Component */}
+            {getTimerText() && (
+              <div class="text-center mb-4">
+                <span class="text-xl font-bold">{getTimerText()}</span>
+              </div>
+            )}
+            
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="flex flex-col items-center">
                 <span class="text-3xl font-bold text-green-400">
