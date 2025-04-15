@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component, Show, createMemo } from "solid-js";
 import { useTyping } from "../context/TypingContext";
 import { useKeyboard, KeyData } from "../context/KeyboardContext";
 import { Transition } from "solid-transition-group";
@@ -162,6 +162,79 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
     );
   }
 
+  // Define constants outside of render loop to avoid recalculations
+  const keySize = 2.8; // Smaller base size
+  const keyHeight = 2.8; // Key height (in rem)
+  const rowSpacing = 3.2; // Much larger vertical spacing
+  const colSpacing = 3.2; // Fixed column spacing
+  
+  // Memoize pressed keys lookup for better performance
+  const getPressedKeyValue = createMemo(() => {
+    const keys = pressedKeys();
+    // Create a lookup map for quick access
+    const keyMap = new Map();
+    keys.forEach(key => {
+      keyMap.set(key.code, key.value);
+    });
+    
+    return (code: number) => keyMap.get(code) || 0;
+  });
+
+  // Create a stable component for each key to avoid re-rendering the entire keyboard
+  const KeyComponent = (props: { key: KeyData }) => {
+    const keyValue = createMemo(() => getPressedKeyValue()(props.key.code));
+    
+    return (
+      <div
+        class="absolute flex flex-col items-center justify-start overflow-hidden rounded-sm border border-stone-600/20"
+        style={{
+          width: `${(props.key.width || 1) * keySize}rem`,
+          height: `${keyHeight}rem`,
+          left: `${props.key.col * colSpacing}rem`,
+          top: `${props.key.row * rowSpacing}rem`,
+          "background-color": "rgb(28, 25, 23)",
+          transform: "translate3d(0, 0, 0)", // Force GPU acceleration
+        }}
+      >
+        {/* Fill container from top to bottom - only update when value changes */}
+        <div
+          class="bg-blurple absolute top-0 right-0 left-0 z-0"
+          style={{
+            height: `${keyValue() * 100}%`,
+            opacity: `${keyValue() * 100}%`,
+            transition: "height 75ms ease-out, opacity 75ms ease-out",
+          }}
+        ></div>
+
+        {/* Key label centered */}
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center">
+          <p
+            class="text-sm font-medium text-white"
+            style={{
+              transform: keyValue() > 0 ? "translateY(-1.5px)" : "translateY(0)",
+              transition: "transform 300ms ease-in-out",
+            }}
+          >
+            {props.key.name}
+          </p>
+
+          {/* Show depth counter only when key is pressed */}
+          <Show when={keyValue() > 0}>
+            <p
+              class="absolute text-xs text-white"
+              style={{
+                transform: "translateY(8px)",
+                opacity: "0.9"
+              }}
+            >
+              {keyValue().toFixed(2)}
+            </p>
+          </Show>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Transition
       name="keyboard-visualizer"
@@ -175,70 +248,16 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
     >
       <Show when={isTestActive()}>
         <div class="flex flex-col items-center p-6">
-          <div class="relative mx-auto mb-4 h-[300px] w-[750px] max-w-5xl rounded-lg p-4">
-            {/* Static keyboard layout */}
-            {keyboardLayout.map((key) => {
-              const keySize = 2.8; // Smaller base size
-              const keyHeight = 2.8; // Key height (in rem)
-              const rowSpacing = 3.2; // Much larger vertical spacing
-              const colSpacing = 3.2; // Fixed column spacing
-              const pressedKey = getPressedKey(pressedKeys(), key.code);
-              const keyValue = pressedKey ? pressedKey.value : 0;
-
-              return (
-                <div
-                  class="absolute flex flex-col items-center justify-start overflow-hidden rounded-sm border border-stone-600/20 transition-all duration-75"
-                  style={{
-                    width: `${(key.width || 1) * keySize}rem`,
-                    height: `${keyHeight}rem`,
-                    left: `${key.col * colSpacing}rem`,
-                    top: `${key.row * rowSpacing}rem`,
-                    "background-color": "rgb(28, 25, 23)",
-                  }}
-                >
-                  {/* Fill container from top to bottom */}
-                  <div
-                    class="bg-blurple absolute top-0 right-0 left-0 z-0 transition-all duration-75"
-                    style={{
-                      height: `${keyValue * 100}%`,
-                      opacity: `${keyValue * 100}%`,
-                    }}
-                  ></div>
-
-                  {/* Key label centered */}
-                  <div class="absolute inset-0 z-10 flex flex-col items-center justify-center">
-                    <p
-                      class="text-sm font-medium text-white transition-all duration-300 ease-in-out data-[active=true]:-translate-y-1.5"
-                      data-active={keyValue > 0}
-                    >
-                      {key.name}
-                    </p>
-
-                    {/* Depth counter with opacity transition */}
-                    <p
-                      class="absolute translate-y-2 text-xs text-white"
-                      style={{
-                        opacity: keyValue > 0 ? 0.9 : 0,
-                        transition:
-                          "opacity 200ms ease-in-out, transform 200ms ease-in-out",
-                      }}
-                    >
-                      {keyValue.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+          <div class="relative mx-auto mb-4 h-[300px] w-[750px] max-w-5xl rounded-lg p-4 will-change-transform">
+            {/* Render each key as a separate component for better performance */}
+            {keyboardLayout.map((key) => (
+              <KeyComponent key={key} />
+            ))}
           </div>
         </div>
       </Show>
     </Transition>
   );
 };
-
-// Helper function to get a pressed key by code
-function getPressedKey(pressedKeys: KeyData[], code: number) {
-  return pressedKeys.find((key) => key.code === code);
-}
 
 export default KeyboardVisualizer;
