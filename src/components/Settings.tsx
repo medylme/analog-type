@@ -268,6 +268,8 @@ const Settings: Component = () => {
                       // Enforce minimum of 0.01
                       newPos = Math.max(0.01, newPos);
                       setDisplayMin(newPos);
+                      // Update the app-level signal
+                      setCurrentMinValue(newPos);
                     }}
                     onDragEnd={(newPos) => {
                       // Enforce minimum of 0.01
@@ -280,6 +282,9 @@ const Settings: Component = () => {
                           max: settings().targetBracket?.max || 0.7,
                         },
                       });
+                      
+                      // Reset the app-level signals when drag ends
+                      setCurrentMinValue(undefined);
                     }}
                   />
 
