@@ -1,6 +1,7 @@
 import { Component } from "solid-js";
 import { useTyping } from "../context/TypingContext";
 import SliderHandle from "./SliderHandle";
+import Tooltip from "./Tooltip";
 
 export type TestMode = "time" | "words";
 export type TimeOption = 15 | 30 | 60 | 120;
@@ -150,6 +151,13 @@ const Settings: Component = () => {
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-2">
             <h3 class="text-lg font-medium">Agony Mode</h3>
+            <Tooltip
+              position="bottom"
+              width="300px"
+              content="Only allows input within a customisable bracket. Press too far and it doesn't count!"
+            >
+              ?
+            </Tooltip>
             <label class="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
