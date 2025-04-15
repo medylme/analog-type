@@ -2,6 +2,7 @@ import { Component } from "solid-js";
 import { useTyping } from "../context/TypingContext";
 import SliderHandle from "./SliderHandle";
 import Tooltip from "./Tooltip";
+import Button from "./Button";
 
 export type TestMode = "time" | "words";
 export type TimeOption = 15 | 30 | 60 | 120;
@@ -56,12 +57,8 @@ const Settings: Component = () => {
         <div class="flex-1">
           <h3 class="text-lg font-medium mb-2">Test Mode</h3>
           <div class="flex gap-2">
-            <button
-              class={`px-4 py-2 rounded-md ${
-                settings().mode === "time"
-                  ? "bg-blurple text-white"
-                  : "bg-stone-700 text-stone-300"
-              }`}
+            <Button
+              selected={settings().mode === "time"}
               onClick={() =>
                 updateSettings({
                   ...settings(),
@@ -71,13 +68,9 @@ const Settings: Component = () => {
               }
             >
               Time
-            </button>
-            <button
-              class={`px-4 py-2 rounded-md ${
-                settings().mode === "words"
-                  ? "bg-blurple text-white"
-                  : "bg-stone-700 text-stone-300"
-              }`}
+            </Button>
+            <Button
+              selected={settings().mode === "words"}
               onClick={() =>
                 updateSettings({
                   ...settings(),
@@ -87,7 +80,7 @@ const Settings: Component = () => {
               }
             >
               Words
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -99,12 +92,8 @@ const Settings: Component = () => {
           <h3 class="text-lg font-medium mb-2">Time (seconds)</h3>
           <div class="flex gap-2 flex-wrap">
             {timeOptions.map((time) => (
-              <button
-                class={`px-4 py-2 rounded-md ${
-                  settings().timeSeconds === time
-                    ? "bg-blurple text-white"
-                    : "bg-stone-700 text-stone-300"
-                }`}
+              <Button
+                selected={settings().timeSeconds === time}
                 onClick={() =>
                   updateSettings({
                     ...settings(),
@@ -114,7 +103,7 @@ const Settings: Component = () => {
                 disabled={settings().mode !== "time"}
               >
                 {time}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -127,12 +116,8 @@ const Settings: Component = () => {
           <h3 class="text-lg font-medium mb-2">Word Count</h3>
           <div class="flex gap-2 flex-wrap">
             {wordCountOptions.map((count) => (
-              <button
-                class={`px-4 py-2 rounded-md ${
-                  settings().wordCount === count
-                    ? "bg-blurple text-white"
-                    : "bg-stone-700 text-stone-300"
-                }`}
+              <Button
+                selected={settings().wordCount === count}
                 onClick={() =>
                   updateSettings({
                     ...settings(),
@@ -142,7 +127,7 @@ const Settings: Component = () => {
                 disabled={settings().mode !== "words"}
               >
                 {count}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
