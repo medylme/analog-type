@@ -52,7 +52,7 @@ const Main: Component = () => {
             </div>
 
             {/* Keyboard Visualizer */}
-            <KeyboardVisualizer variant="keyboard" />
+            {/* <KeyboardVisualizer variant="keyboard" /> */}
 
             {/* Metrics */}
             <Metrics />
