@@ -10,15 +10,16 @@ import { KeyboardProvider } from "./context/KeyboardContext";
 import LandingPage from "./components/LandingPage";
 import Header from "./components/Header";
 import KeyboardVisualizer from "./components/KeyboardVisualizer";
-import KeyboardDebug from "./components/KeyboardDebug";
 import Timer from "./components/Timer";
+import { MetaProvider, Title } from "@solidjs/meta";
 
-const TypingApp: Component = () => {
+const Main: Component = () => {
   const { isTestActive, isTestComplete, resetTest } = useTyping();
   const { isConnected } = useDevice();
 
   return (
     <div class="min-h-screen bg-stone-900 py-8 font-display select-none">
+      <Title>Analog-ony</Title>
       <Show when={isConnected()}>
         <Header />
       </Show>
@@ -79,13 +80,15 @@ const TypingApp: Component = () => {
 
 const App: Component = () => {
   return (
-    <DeviceProvider>
-      <KeyboardProvider>
-        <TypingProvider>
-          <TypingApp />
-        </TypingProvider>
-      </KeyboardProvider>
-    </DeviceProvider>
+    <MetaProvider>
+      <DeviceProvider>
+        <KeyboardProvider>
+          <TypingProvider>
+            <Main />
+          </TypingProvider>
+        </KeyboardProvider>
+      </DeviceProvider>
+    </MetaProvider>
   );
 };
 
