@@ -18,6 +18,7 @@ const SliderHandle: Component<SliderHandleProps> = (props) => {
       }`}
       style={{
         left: `${props.position * 100}%`,
+        cursor: props.enabled ? "pointer" : "not-allowed",
       }}
       onMouseDown={(e) => {
         if (!props.enabled) return;
