@@ -50,7 +50,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
-    targetBracket: { enabled: false, min: 0.3, max: 0.7 },
+    targetBracket: { enabled: true, min: 0.2, max: 0.8 },
   });
 
   // Text state
@@ -104,6 +104,14 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
   // Update settings
   const updateSettings = (newSettings: TestSettings) => {
+    // Ensure min is at least 0.01
+    if (newSettings.targetBracket) {
+      newSettings.targetBracket.min = Math.max(
+        0.01,
+        newSettings.targetBracket.min
+      );
+    }
+
     setSettings(newSettings);
     resetTest();
   };

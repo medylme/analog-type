@@ -19,9 +19,9 @@ const Settings: Component = () => {
   const { settings, updateSettings } = useTyping();
 
   const handleMinChange = (newMin: number) => {
-    // Ensure min doesn't go above max
+    // Ensure min doesn't go below 0.01 and doesn't go above max
     const currentMax = settings().targetBracket?.max || 1;
-    newMin = Math.min(newMin, currentMax - 0.01);
+    newMin = Math.max(0.01, Math.min(newMin, currentMax - 0.01));
 
     updateSettings({
       ...settings(),
@@ -160,8 +160,8 @@ const Settings: Component = () => {
                     ...settings(),
                     targetBracket: {
                       enabled: e.target.checked,
-                      min: 0.3,
-                      max: 0.7,
+                      min: e.target.checked ? 0.2 : 0.4,
+                      max: 0.8,
                     },
                   });
                 }}
@@ -224,6 +224,8 @@ const Settings: Component = () => {
                     position={settings().targetBracket?.min || 0}
                     enabled={true}
                     onPositionChange={(newPos) => {
+                      // Enforce minimum of 0.01
+                      newPos = Math.max(0.01, newPos);
                       updateSettings({
                         ...settings(),
                         targetBracket: {
