@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { useTyping } from "../context/TypingContext";
 import SliderHandle from "./SliderHandle";
 import Tooltip from "./Tooltip";
@@ -19,12 +19,33 @@ const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
   const { settings, updateSettings } = useTyping();
+  
+  // Local state for displaying values during dragging
+  const [displayMin, setDisplayMin] = createSignal(settings().targetBracket?.min || 0);
+  const [displayMax, setDisplayMax] = createSignal(settings().targetBracket?.max || 1);
 
   const handleMinChange = (newMin: number) => {
-    // Ensure min doesn't go below 0.01 and doesn't go above max
+    // For display only during dragging
     const currentMax = settings().targetBracket?.max || 1;
-    newMin = Math.max(0.01, Math.min(newMin, currentMax - 0.01));
+    const minDistance = 0.1;
+    newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
+    setDisplayMin(newMin);
+  };
 
+  const handleMaxChange = (newMax: number) => {
+    // For display only during dragging
+    const currentMin = settings().targetBracket?.min || 0;
+    const minDistance = 0.1;
+    newMax = Math.max(newMax, currentMin + minDistance);
+    setDisplayMax(newMax);
+  };
+  
+  const handleMinDragEnd = (newMin: number) => {
+    // Update actual settings when drag ends
+    const currentMax = settings().targetBracket?.max || 1;
+    const minDistance = 0.1;
+    newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
+    
     updateSettings({
       ...settings(),
       targetBracket: {
@@ -35,11 +56,12 @@ const Settings: Component = () => {
     });
   };
 
-  const handleMaxChange = (newMax: number) => {
-    // Ensure max doesn't go below min
+  const handleMaxDragEnd = (newMax: number) => {
+    // Update actual settings when drag ends
     const currentMin = settings().targetBracket?.min || 0;
-    newMax = Math.max(newMax, currentMin + 0.01);
-
+    const minDistance = 0.1;
+    newMax = Math.max(newMax, currentMin + minDistance);
+    
     updateSettings({
       ...settings(),
       targetBracket: {
@@ -49,6 +71,14 @@ const Settings: Component = () => {
       },
     });
   };
+  
+  // Keep local display values in sync with settings
+  if (displayMin() !== settings().targetBracket?.min) {
+    setDisplayMin(settings().targetBracket?.min || 0);
+  }
+  if (displayMax() !== settings().targetBracket?.max) {
+    setDisplayMax(settings().targetBracket?.max || 1);
+  }
 
   return (
     <div class="bg-stone-800 rounded-lg p-4 mb-6 text-white">
@@ -173,33 +203,33 @@ const Settings: Component = () => {
                   <div
                     class="absolute h-2 rounded-full top-3 bg-blurple"
                     style={{
-                      left: `${(settings().targetBracket?.min || 0) * 100}%`,
+                      left: `${displayMin() * 100}%`,
                       width: `${
-                        ((settings().targetBracket?.max || 1) -
-                          (settings().targetBracket?.min || 0)) *
-                        100
+                        (displayMax() - displayMin()) * 100
                       }%`,
                     }}
                   ></div>
 
                   {/* Min handle */}
                   <SliderHandle
-                    position={settings().targetBracket?.min || 0}
+                    position={displayMin()}
                     enabled={true}
                     onPositionChange={handleMinChange}
+                    onDragEnd={handleMinDragEnd}
                   />
 
                   {/* Max handle */}
                   <SliderHandle
-                    position={settings().targetBracket?.max || 1}
+                    position={displayMax()}
                     enabled={true}
                     onPositionChange={handleMaxChange}
+                    onDragEnd={handleMaxDragEnd}
                   />
 
                   {/* Bracket value indicators */}
                   <div class="flex justify-between text-xs text-stone-300 -translate-y-2">
-                    <span>Min: {settings().targetBracket?.min.toFixed(2)}</span>
-                    <span>Max: {settings().targetBracket?.max.toFixed(2)}</span>
+                    <span>Min: {displayMin().toFixed(2)}</span>
+                    <span>Max: {displayMax().toFixed(2)}</span>
                   </div>
                 </>
               ) : (
@@ -208,15 +238,20 @@ const Settings: Component = () => {
                   <div
                     class="absolute h-2 rounded-full top-3 bg-blurple"
                     style={{
-                      width: `${(settings().targetBracket?.min || 0) * 100}%`,
+                      width: `${displayMin() * 100}%`,
                     }}
                   ></div>
 
                   {/* Single actuation point handle */}
                   <SliderHandle
-                    position={settings().targetBracket?.min || 0}
+                    position={displayMin()}
                     enabled={true}
                     onPositionChange={(newPos) => {
+                      // Enforce minimum of 0.01
+                      newPos = Math.max(0.01, newPos);
+                      setDisplayMin(newPos);
+                    }}
+                    onDragEnd={(newPos) => {
                       // Enforce minimum of 0.01
                       newPos = Math.max(0.01, newPos);
                       updateSettings({
@@ -233,7 +268,7 @@ const Settings: Component = () => {
                   {/* Actuation point value indicator */}
                   <div class="flex justify-center text-xs text-stone-300">
                     <span>
-                      Actuation: {settings().targetBracket?.min.toFixed(2)}
+                      Actuation: {displayMin().toFixed(2)}
                     </span>
                   </div>
                 </>

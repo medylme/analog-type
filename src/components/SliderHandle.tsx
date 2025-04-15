@@ -1,12 +1,61 @@
-import { Component } from "solid-js";
+import { Component, createSignal, onCleanup, onMount } from "solid-js";
 
-type SliderHandleProps = {
+interface SliderHandleProps {
   position: number;
   enabled: boolean;
-  onPositionChange: (newPosition: number) => void;
-};
+  onPositionChange: (position: number) => void;
+  onDragEnd?: (position: number) => void;
+}
 
 const SliderHandle: Component<SliderHandleProps> = (props) => {
+  const [isDragging, setIsDragging] = createSignal(false);
+  let handleRef: HTMLDivElement | undefined;
+
+  const handleMouseDown = (e: MouseEvent) => {
+    if (!props.enabled) return;
+    setIsDragging(true);
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging() || !handleRef || !props.enabled) return;
+
+    const parentRect = handleRef.parentElement?.getBoundingClientRect();
+    if (!parentRect) return;
+
+    const x = Math.max(
+      0,
+      Math.min(e.clientX - parentRect.left, parentRect.width)
+    );
+    const newPosition = x / parentRect.width;
+    props.onPositionChange(newPosition);
+  };
+
+  const handleMouseUp = (e: MouseEvent) => {
+    if (isDragging() && props.onDragEnd) {
+      const parentRect = handleRef?.parentElement?.getBoundingClientRect();
+      if (parentRect) {
+        const x = Math.max(
+          0,
+          Math.min(e.clientX - parentRect.left, parentRect.width)
+        );
+        const finalPosition = x / parentRect.width;
+        props.onDragEnd(finalPosition);
+      }
+    }
+    setIsDragging(false);
+  };
+
+  onMount(() => {
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  });
+
   return (
     <button
       type="button"
@@ -20,30 +69,7 @@ const SliderHandle: Component<SliderHandleProps> = (props) => {
         left: `${props.position * 100}%`,
         cursor: props.enabled ? "pointer" : "not-allowed",
       }}
-      onMouseDown={(e) => {
-        if (!props.enabled) return;
-
-        const slider = e.currentTarget.parentElement;
-        if (!slider) return;
-
-        const sliderRect = slider.getBoundingClientRect();
-        const sliderWidth = sliderRect.width;
-
-        const handleMouseMove = (moveEvent: MouseEvent) => {
-          const newPositionX = moveEvent.clientX - sliderRect.left;
-          let newPercent = Math.max(0, Math.min(1, newPositionX / sliderWidth));
-
-          props.onPositionChange(newPercent);
-        };
-
-        const handleMouseUp = () => {
-          document.removeEventListener("mousemove", handleMouseMove);
-          document.removeEventListener("mouseup", handleMouseUp);
-        };
-
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
-      }}
+      onMouseDown={handleMouseDown}
     ></button>
   );
 };
