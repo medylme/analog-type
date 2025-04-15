@@ -169,7 +169,7 @@ const Settings: Component = () => {
               <div class="relative w-9 h-5 bg-stone-700 peer-checked:bg-blurple rounded-full peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
             </label>
           </div>
-          <div class="px-2 py-4">
+          <div class="py-2">
             <div class="relative h-8">
               {/* Slider track */}
               <div class="absolute w-full h-2 rounded-full top-3 bg-stone-700"></div>
@@ -204,7 +204,7 @@ const Settings: Component = () => {
                   />
 
                   {/* Bracket value indicators */}
-                  <div class="flex justify-between text-xs text-stone-300">
+                  <div class="flex justify-between text-xs text-stone-300 -translate-y-2">
                     <span>Min: {settings().targetBracket?.min.toFixed(2)}</span>
                     <span>Max: {settings().targetBracket?.max.toFixed(2)}</span>
                   </div>
