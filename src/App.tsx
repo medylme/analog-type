@@ -7,7 +7,6 @@ import { InputProvider } from "@/contexts/InputContext";
 import { StylingProvider } from "@/contexts/StylingContext";
 
 import IndexPage from "@/routes/index";
-import Onboarding from "@/components/Onboarding";
 
 export default function App() {
   return (
