@@ -5,6 +5,7 @@ import { TypingProvider } from "@/contexts/TypingContext";
 import { DeviceProvider } from "@/contexts/DeviceContext";
 import { InputProvider } from "@/contexts/InputContext";
 import { StylingProvider } from "@/contexts/StylingContext";
+import MobileBlock from "@/components/MobileBlock";
 
 import IndexPage from "@/routes/index";
 
@@ -13,6 +14,7 @@ export default function App() {
     <MetaProvider>
       <Title>Analog-type</Title>
       <Link rel="icon" href="/favicon.ico" />
+      <MobileBlock />
       <DeviceProvider>
         <InputProvider>
           <TypingProvider>
