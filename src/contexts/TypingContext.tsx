@@ -59,14 +59,14 @@ export function TypingProvider(props: { children: JSX.Element }) {
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
-    targetBracket: { enabled: false, min: 0.2, max: 0.8 },
+    targetBracket: { enabled: false, min: 0.4, max: 0.8 },
     challengeType: "static",
     difficultyLevel: "normal",
   });
   // Doesn't reset the test when modified
   const [runningSettings, setRunningSettings] = createSignal<RunningSettings>({
     targetBracket: {
-      min: initialSettings().targetBracket?.min ?? 0.2,
+      min: initialSettings().targetBracket?.min ?? 0.4,
       max: initialSettings().targetBracket?.max ?? 0.8,
     },
   });
