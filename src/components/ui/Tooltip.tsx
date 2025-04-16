@@ -36,7 +36,7 @@ const Tooltip: Component<TooltipProps> = (props) => {
         <Show when={isVisible()}>
           <div
             class={`
-              absolute z-50 rounded-md bg-stone-900/95 p-3 text-pretty text-white shadow-lg text-sm pointer-events-none
+              absolute z-50 rounded-md bg-stone-900 p-3 text-pretty text-white shadow-lg text-sm pointer-events-none
               ${position === "top" ? "bottom-full left-1/2 -translate-x-1/2 -translate-y-2 mb-2" : ""}
               ${position === "bottom" ? "top-full left-1/2 -translate-x-1/2 translate-y-2 mt-2" : ""}
               ${position === "left" ? "right-full top-1/2 -translate-y-1/2 -translate-x-2 mr-2" : ""}

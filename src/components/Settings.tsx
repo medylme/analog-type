@@ -5,7 +5,10 @@ import { useStyling } from "@/contexts/StylingContext";
 import SliderHandle from "@/components/ui/SliderHandle";
 import Tooltip from "@/components/ui/Tooltip";
 import Button from "@/components/ui/Button";
-import { TimeOption, WordCountOption } from "@/types/context/TypingContextTypes";
+import {
+  TimeOption,
+  WordCountOption,
+} from "@/types/context/TypingContextTypes";
 
 const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
@@ -197,17 +200,60 @@ const Settings: Component = () => {
         </div>
 
         {/* Target Bracket */}
-        <div class="flex-1">
-          <div class="mb-2 flex items-center gap-2">
-            <h3 class="text-lg font-medium">Agony Mode</h3>
-            <Tooltip
-              position="bottom"
-              width="300px"
-              content="Only allows input within a customisable bracket. Press too far and it doesn't count!"
-            >
-              ?
-            </Tooltip>
-            <label class="inline-flex cursor-pointer items-center">
+        <div class="flex flex-1 flex-col gap-2">
+          <div class="mb-2 flex flex-col gap-2">
+            <div class="flex flex-row items-center gap-2">
+              <h3 class="text-lg font-medium">Typing Mode</h3>
+              <Tooltip
+                position="bottom"
+                width="300px"
+                content={
+                  <>
+                    <b>Normal:</b> Typing as usual with an actuation point.
+                    <br /> <br />
+                    <b>Analog-ony:</b> Keep your inputs within the range. Press
+                    too far and it doesn't count!
+                  </>
+                }
+              >
+                ?
+              </Tooltip>
+            </div>
+            <div class="flex flex-row gap-2">
+              <Button
+                selected={!settings().targetBracket?.enabled}
+                onClick={() => {
+                  updateSettings({
+                    ...settings(),
+                    targetBracket: {
+                      enabled: false,
+                      min: 0.4,
+                      max: 0.8,
+                    },
+                  });
+                }}
+              >
+                Normal
+              </Button>
+              <Button
+                selected={settings().targetBracket?.enabled}
+                onClick={() => {
+                  updateSettings({
+                    ...settings(),
+                    targetBracket: {
+                      enabled: true,
+                      min: 0.2,
+                      max: 0.8,
+                    },
+                  });
+                }}
+              >
+                Agony
+              </Button>
+            </div>
+
+            {/*
+                  <label class="inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
                 class="peer sr-only"
@@ -225,6 +271,7 @@ const Settings: Component = () => {
               />
               <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
             </label>
+              */}
           </div>
 
           <div class="py-2">
