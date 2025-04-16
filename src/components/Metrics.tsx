@@ -25,17 +25,11 @@ const Metrics: Component = () => {
       !isTestComplete()
     ) {
       const timer = setInterval(() => {
+        if (isTestComplete()) return;
         setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
       }, 1000);
 
       return () => clearInterval(timer);
-    }
-  });
-
-  // When test completes, set the final elapsed time
-  createEffect(() => {
-    if (isTestComplete() && startTime() !== null) {
-      setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
     }
   });
 
@@ -69,9 +63,11 @@ const Metrics: Component = () => {
         {isVisible() && (
           <div class="mt-4 rounded-xl bg-stone-800 p-4 text-white">
             {/* Score Component */}
-            <div class="mb-4 text-center">
-              <span class="text-xl font-bold">Score: {metrics().score}</span>
-            </div>
+            {initialSettings().mode === "time" && (
+              <div class="mb-4 text-center">
+                <span class="text-xl font-bold">Score: {metrics().score}</span>
+              </div>
+            )}
 
             {/* Timer Component */}
             {getTimerText() && (
@@ -85,7 +81,7 @@ const Metrics: Component = () => {
                 <span class="text-3xl font-bold text-green-400">
                   <Odometer
                     number={metrics().wpm}
-                    speed={50}
+                    speed={100}
                     size={30}
                     width={0.65}
                     separator={false}
@@ -98,7 +94,7 @@ const Metrics: Component = () => {
                 <span class="text-3xl font-bold text-blue-400">
                   <Odometer
                     number={metrics().rawWpm}
-                    speed={50}
+                    speed={100}
                     size={30}
                     width={0.65}
                     separator={false}
@@ -113,7 +109,7 @@ const Metrics: Component = () => {
                 <span class="text-3xl font-bold text-yellow-400">
                   <Odometer
                     number={metrics().cpm}
-                    speed={50}
+                    speed={100}
                     size={30}
                     width={0.65}
                     separator={false}
@@ -126,7 +122,7 @@ const Metrics: Component = () => {
                 <span class="flex flex-row items-start gap-1 text-3xl font-bold text-purple-400">
                   <Odometer
                     number={metrics().accuracy}
-                    speed={50}
+                    speed={100}
                     size={30}
                     width={0.65}
                     separator={false}

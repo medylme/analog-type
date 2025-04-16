@@ -740,7 +740,7 @@ const TypeRacer: Component = () => {
       ) {
         calculateMetrics();
       }
-    }, 1000);
+    }, 100);
 
     onCleanup(() => {
       clearInterval(focusInterval);
