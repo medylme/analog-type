@@ -6,7 +6,8 @@ import SampleVisualizer from "./SampleVisualizer";
 
 export default function Onboarding() {
   const [isOpen, setIsOpen] = createSignal(false);
-  const { updateInitialSettings, initialSettings } = useTyping();
+  const { updateInitialSettings, initialSettings, randomizeBracket } =
+    useTyping();
 
   onMount(() => {
     // Check if user has completed onboarding
@@ -22,6 +23,7 @@ export default function Onboarding() {
       difficultyLevel: "easy",
       targetBracket: { enabled: true, min: 0.4, max: 0.8 },
     });
+    randomizeBracket();
     completeOnboarding();
   };
 
