@@ -92,7 +92,7 @@ const Main: Component = () => {
 const App: Component = () => {
   return (
     <MetaProvider>
-      <Title>Analog-ony</Title>
+      <Title>Analog-type</Title>
       <Link rel="icon" href="/favicon.ico" />
       <DeviceProvider>
         <KeyboardProvider>

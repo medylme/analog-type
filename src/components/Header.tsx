@@ -8,7 +8,7 @@ const Header: Component = () => {
     <header class="bg-stone-800 px-4 py-3 shadow-md">
       <div class="container mx-auto flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <h1 class="text-xl font-bold text-white">Analog-ony</h1>
+          <h1 class="text-xl font-bold text-white">Analog-type</h1>
         </div>
 
         <Show when={isConnected()}>

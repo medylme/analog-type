@@ -6,8 +6,8 @@ const LandingPage: Component = () => {
 
   return (
     <div class="flex min-h-screen flex-col items-center justify-center bg-stone-900 p-4 text-white">
-      <div class="w-full max-w-md space-y-8 rounded-xl bg-stone-800 p-8 text-center shadow-xl">
-        <h1 class="mb-6 text-4xl font-bold">Analog-ony</h1>
+      <div class="w-full max-w-lg space-y-8 rounded-xl bg-stone-800 p-8 text-center shadow-xl">
+        <h1 class="mb-6 text-4xl font-bold">Analog-type</h1>
 
         <div class="mb-6">
           <img
@@ -21,7 +21,7 @@ const LandingPage: Component = () => {
         </div>
 
         <p class="mb-8 text-lg text-pretty">
-          Please connect a <b>Wooting keyboard</b>.
+          Connect your <b>Wooting keyboard</b> to play!
         </p>
 
         <button
@@ -31,10 +31,20 @@ const LandingPage: Component = () => {
           Connect
         </button>
 
-        <p class="mt-4 text-sm text-gray-400">
-          If you don't have a Wooting keyboard, this demo probably won't work
-          properly.
-        </p>
+        <ul class="text-sm text-gray-300">
+          <li>
+            Make sure you use a browser compatible with the{" "}
+            <a
+              class="underline"
+              target="_blank"
+              href="https://developer.mozilla.org/en-US/docs/Web/API/WebHID_API#browser_compatibility"
+            >
+              WebHID API
+            </a>
+            {". "}
+            <span class="text-gray-400">(Chrome 89+, Edge 89+, Opera 75+)</span>
+          </li>
+        </ul>
       </div>
     </div>
   );
