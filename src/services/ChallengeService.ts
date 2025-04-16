@@ -1,15 +1,5 @@
-export type DifficultyLevel = 'easy' | 'normal' | 'hard' | 'agony';
-export type ChallengeType = 'static' | 'challenge';
-
-export interface BracketConfig {
-  min: number;
-  max: number;
-}
-
-interface ChallengeSettings {
-  actuationChangeRange: BracketConfig;
-  bracketSizeRange: BracketConfig;
-}
+import { DifficultyLevel } from "@/types/context/TypingContextTypes";
+import { ChallengeSettings, BracketConfig } from "@/types/services/ChallengeTypes";
 
 class ChallengeService {
   private difficultySettings: Record<DifficultyLevel, ChallengeSettings> = {
