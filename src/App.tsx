@@ -11,7 +11,7 @@ import { StylingProvider, useStyling } from "./context/StylingContext";
 import LandingPage from "./components/LandingPage";
 import Header from "./components/Header";
 import KeyboardVisualizer from "./components/KeyboardVisualizer";
-import { MetaProvider, Title } from "@solidjs/meta";
+import { Link, MetaProvider, Title } from "@solidjs/meta";
 
 // Create signals for min/max values at the app level to be shared
 export const [currentMinValue, setCurrentMinValue] = createSignal<
@@ -28,7 +28,6 @@ const Main: Component = () => {
 
   return (
     <div class="font-display min-h-screen bg-stone-900 py-8 select-none">
-      <Title>Analog-ony</Title>
       <Show when={isConnected()}>
         <Header />
       </Show>
@@ -93,6 +92,8 @@ const Main: Component = () => {
 const App: Component = () => {
   return (
     <MetaProvider>
+      <Title>Analog-ony</Title>
+      <Link rel="icon" href="/favicon.ico" />
       <DeviceProvider>
         <KeyboardProvider>
           <TypingProvider>
