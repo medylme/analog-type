@@ -1,4 +1,5 @@
 import { Component, Index, createMemo, Show, mergeProps } from "solid-js";
+
 import "./styles.css";
 
 export type OdometerProps = {

@@ -1,17 +1,17 @@
 import { Component, Show, createMemo } from "solid-js";
-import { useTyping } from "../context/TypingContext";
-import { useKeyboard, KeyData } from "../context/KeyboardContext";
 import { Transition } from "solid-transition-group";
+
+import { useTyping } from "@/contexts/TypingContext";
+import { useKeyboard } from "@/contexts/InputContext";
+import { KeyData } from "@/types/context/InputContextTypes";
 
 interface KeyboardVisualizerProps {
   variant: "single" | "keyboard";
-  // Add optional min and max props to override settings values during dragging
-  minValue?: number;
-  maxValue?: number;
 }
 
 const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
-  const { isTestActive, isTestComplete, settings } = useTyping();
+  const { isTestActive, isTestComplete, settings, displaySettings } =
+    useTyping();
   const { pressedKeys, keyboardLayout, getMostPressedKey } = useKeyboard();
 
   if (props.variant === "single") {
@@ -27,12 +27,12 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
             const targetBracket = {
               ...settings().targetBracket,
               min:
-                props.minValue !== undefined
-                  ? props.minValue
+                displaySettings().targetBracket?.min !== undefined
+                  ? displaySettings().targetBracket?.min
                   : settings().targetBracket?.min || 0,
               max:
-                props.maxValue !== undefined
-                  ? props.maxValue
+                displaySettings().targetBracket?.max !== undefined
+                  ? displaySettings().targetBracket?.max
                   : settings().targetBracket?.max || 1,
             };
 
@@ -167,23 +167,23 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
   const keyHeight = 2.8; // Key height (in rem)
   const rowSpacing = 3.2; // Much larger vertical spacing
   const colSpacing = 3.2; // Fixed column spacing
-  
+
   // Memoize pressed keys lookup for better performance
   const getPressedKeyValue = createMemo(() => {
     const keys = pressedKeys();
     // Create a lookup map for quick access
     const keyMap = new Map();
-    keys.forEach(key => {
+    keys.forEach((key) => {
       keyMap.set(key.code, key.value);
     });
-    
+
     return (code: number) => keyMap.get(code) || 0;
   });
 
   // Create a stable component for each key to avoid re-rendering the entire keyboard
   const KeyComponent = (props: { key: KeyData }) => {
     const keyValue = createMemo(() => getPressedKeyValue()(props.key.code));
-    
+
     return (
       <div
         class="absolute flex flex-col items-center justify-start overflow-hidden rounded-sm border border-stone-600/20"
@@ -211,7 +211,8 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
           <p
             class="text-sm font-medium text-white"
             style={{
-              transform: keyValue() > 0 ? "translateY(-1.5px)" : "translateY(0)",
+              transform:
+                keyValue() > 0 ? "translateY(-1.5px)" : "translateY(0)",
               transition: "transform 300ms ease-in-out",
             }}
           >
@@ -224,7 +225,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
               class="absolute text-xs text-white"
               style={{
                 transform: "translateY(8px)",
-                opacity: "0.9"
+                opacity: "0.9",
               }}
             >
               {keyValue().toFixed(2)}

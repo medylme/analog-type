@@ -1,5 +1,6 @@
 import { Component } from "solid-js";
-import { useDevice } from "../context/DeviceContext";
+
+import { useDevice } from "@/contexts/DeviceContext";
 
 const LandingPage: Component = () => {
   const { connectDevice } = useDevice();

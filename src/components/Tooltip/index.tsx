@@ -1,5 +1,6 @@
 import { Component, createSignal, JSX, Show } from "solid-js";
 import { Transition } from "solid-transition-group";
+
 import "./styles.css";
 
 interface TooltipProps {

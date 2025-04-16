@@ -1,14 +1,9 @@
 import { Component, createSignal, createEffect } from "solid-js";
 import { Transition } from "solid-transition-group";
-import { Odometer } from "./Odometer";
-import { useTyping } from "../context/TypingContext";
 
-export interface TypingMetrics {
-  wpm: number;
-  rawWpm: number;
-  cpm: number;
-  accuracy: number;
-}
+import { useTyping } from "@/contexts/TypingContext";
+
+import { Odometer } from "@/components/Odometer";
 
 const Metrics: Component = () => {
   const {

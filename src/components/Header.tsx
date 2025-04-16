@@ -1,5 +1,6 @@
 import { Component, Show } from "solid-js";
-import { useDevice } from "../context/DeviceContext";
+
+import { useDevice } from "@/contexts/DeviceContext";
 
 const Header: Component = () => {
   const { isConnected, device, disconnectDevice } = useDevice();

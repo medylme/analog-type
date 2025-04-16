@@ -1,5 +1,6 @@
 import { createContext, createSignal, useContext, JSX } from "solid-js";
-import { webHIDService } from "../services/WebHIDService";
+
+import { webHIDService } from "@/services/WebHIDService";
 
 interface DeviceContextType {
   isConnected: () => boolean;

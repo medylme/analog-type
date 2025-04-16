@@ -6,10 +6,10 @@ import {
   onCleanup,
 } from "solid-js";
 import { Transition } from "solid-transition-group";
-import wordService from "../services/WordService";
-import { useTyping } from "../context/TypingContext";
-import { useKeyboard } from "../context/KeyboardContext";
-import { useDevice } from "../context/DeviceContext";
+
+import { useTyping } from "@/contexts/TypingContext";
+import { useKeyboard } from "@/contexts/InputContext";
+import wordService from "@/services/WordService";
 
 type KeyActuationState = {
   isActuated: boolean;
@@ -32,7 +32,6 @@ const TypeRacer: Component = () => {
   } = useTyping();
 
   const { pressedKeys } = useKeyboard();
-  const { isConnected } = useDevice();
 
   // Track actuation state of keys
   const [keyActuationStates, setKeyActuationStates] = createSignal<
@@ -58,8 +57,8 @@ const TypeRacer: Component = () => {
   let textContainerRef: HTMLDivElement | undefined;
   let textDisplayRef: HTMLDivElement | undefined;
   let spanRefs: HTMLSpanElement[] = [];
-  let typingTimer: number;
-  let metricsTimer: number;
+  let typingTimer: NodeJS.Timeout;
+  let metricsTimer: NodeJS.Timeout;
   let cursorUpdateRaf: number;
   let lineHeight = 0;
 
@@ -73,11 +72,6 @@ const TypeRacer: Component = () => {
 
     if (!targetBracket || currentKeys.length === 0) return;
 
-    console.log(
-      `Processing ${currentKeys.length} keys with targetBracket:`,
-      targetBracket
-    );
-
     let actuationsToTrigger: number[] = [];
     let lastActuated = lastActuatedKeys();
 
@@ -85,12 +79,6 @@ const TypeRacer: Component = () => {
     currentKeys.forEach((key) => {
       // Skip keys with very small values that might be noise
       if (key.value < 0.01) return;
-
-      console.log(
-        `Processing key: ${key.code.toString(16)} (${
-          key.name
-        }) with value: ${key.value.toFixed(2)}`
-      );
 
       if (targetBracket.enabled) {
         // Get the current state for this key
@@ -108,7 +96,6 @@ const TypeRacer: Component = () => {
               wasAboveMax: false,
             },
           }));
-          console.log(`Key ${key.code.toString(16)} reset after exceeding max`);
         }
         // If key wasn't above max, check normal actuation
         else if (!keyState?.wasAboveMax) {
@@ -128,18 +115,10 @@ const TypeRacer: Component = () => {
                 wasAboveMax: false,
               },
             }));
-            console.log(
-              `Key ${key.code.toString(16)} triggered at ${key.value.toFixed(2)}`
-            );
           }
 
           // Check if an actuated key has gone above max
           if (key.value > targetBracket.max && keyState?.isActuated) {
-            // Key has gone past max, "undo" the actuation
-            console.log(
-              `Key ${key.code.toString(16)} exceeded max: ${key.value.toFixed(2)}, undoing actuation`
-            );
-
             // Remove from actuated keys set
             setLastActuatedKeys((prev) => {
               const newSet = new Set(prev);
@@ -168,11 +147,6 @@ const TypeRacer: Component = () => {
         if (key.value >= targetBracket.min && !lastActuated.has(key.code)) {
           actuationsToTrigger.push(key.code);
           lastActuated.add(key.code);
-          console.log(
-            `Key ${key.code.toString(16)} (${
-              key.name
-            }) triggered at ${key.value.toFixed(2)}`
-          );
         }
       }
     });
@@ -182,11 +156,6 @@ const TypeRacer: Component = () => {
       if (key.value < targetBracket.min && lastActuated.has(key.code)) {
         // Only reset keys that haven't gone past max
         if (!keyActuationStates()[key.code]?.wasAboveMax) {
-          console.log(
-            `Key ${key.code.toString(16)} (${
-              key.name
-            }) reset below threshold: ${key.value.toFixed(2)}`
-          );
           setLastActuatedKeys((prev) => {
             const newSet = new Set(prev);
             newSet.delete(key.code);
@@ -209,11 +178,6 @@ const TypeRacer: Component = () => {
 
     // Trigger actuations
     if (actuationsToTrigger.length > 0) {
-      console.log(
-        `Actuating keys: ${actuationsToTrigger
-          .map((code) => code.toString(16))
-          .join(", ")}`
-      );
       actuationsToTrigger.forEach((keyCode) => {
         triggerKeyInput(keyCode);
       });
@@ -249,9 +213,6 @@ const TypeRacer: Component = () => {
 
     // Get character based on key code
     const char = getCharFromKeyCode(keyCode);
-    console.log(
-      `Triggering key input for code ${keyCode.toString(16)}: ${char}`
-    );
     if (!char) return;
 
     // Special handling for backspace
@@ -820,9 +781,6 @@ const TypeRacer: Component = () => {
 
     // Initial focus state
     setIsWindowFocused(document.hasFocus());
-
-    console.log("TypeRacer component mounted");
-    console.log("Target bracket settings:", settings().targetBracket);
 
     // Update metrics every second while typing
     metricsTimer = setInterval(() => {

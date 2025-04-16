@@ -6,15 +6,23 @@ import {
   JSX,
   onCleanup,
 } from "solid-js";
-import wordService from "../services/WordService";
-import { TypingMetrics } from "../components/Metrics";
-import { TestSettings } from "../components/Settings";
+
+import wordService from "@/services/WordService";
+import { TypingMetrics } from "@/types/components/MetricsTypes";
+import {
+  DisplaySettings,
+  TestSettings,
+} from "@/types/context/TypingContextTypes";
 
 // Define the context type
 interface TypingContextType {
   // Settings
   settings: () => TestSettings;
   updateSettings: (newSettings: TestSettings) => void;
+
+  // Display settings
+  displaySettings: () => DisplaySettings;
+  updateDisplaySettings: (newDisplaySettings: DisplaySettings) => void;
 
   // Text
   typingText: () => string;
@@ -45,27 +53,28 @@ const TypingContext = createContext<TypingContextType>({} as TypingContextType);
 
 // Provider component
 export function TypingProvider(props: { children: JSX.Element }) {
-  // Settings state
   const [settings, setSettings] = createSignal<TestSettings>({
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
     targetBracket: { enabled: true, min: 0.2, max: 0.8 },
   });
+  const [displaySettings, setDisplaySettings] = createSignal<DisplaySettings>({
+    targetBracket: {
+      min: settings().targetBracket?.min ?? 0.2,
+      max: settings().targetBracket?.max ?? 0.8,
+    },
+  });
 
-  // Text state
   const [typingText, setTypingText] = createSignal("");
 
-  // Test state
   const [isTestActive, setIsTestActive] = createSignal(false);
   const [isTestComplete, setIsTestComplete] = createSignal(false);
 
-  // Timer state
   const [startTime, setStartTime] = createSignal<number | null>(null);
   const [remainingTime, setRemainingTime] = createSignal<number | null>(null);
-  let countdownTimer: number;
+  let countdownTimer: NodeJS.Timeout;
 
-  // Metrics state
   const [metrics, setMetrics] = createSignal<TypingMetrics>({
     wpm: 0,
     rawWpm: 0,
@@ -138,12 +147,17 @@ export function TypingProvider(props: { children: JSX.Element }) {
     // Generate new text based on current settings
     const currentSettings = settings();
     if (currentSettings.mode === "time") {
-      setTypingText(wordService.generateInfiniteWordSet(200));
+      setTypingText(wordService.generateWordSet(1000));
     } else {
       setTypingText(
         wordService.generateWordSet(currentSettings.wordCount || 25)
       );
     }
+  };
+
+  // Update display settings
+  const updateDisplaySettings = (newDisplaySettings: DisplaySettings) => {
+    setDisplaySettings(newDisplaySettings);
   };
 
   // Update metrics
@@ -156,7 +170,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
   createEffect(() => {
     const currentSettings = settings();
     if (currentSettings.mode === "time") {
-      setTypingText(wordService.generateInfiniteWordSet(200));
+      setTypingText(wordService.generateWordSet(1000));
     } else {
       setTypingText(
         wordService.generateWordSet(currentSettings.wordCount || 25)
@@ -172,6 +186,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
   const contextValue: TypingContextType = {
     // State getters
     settings,
+    displaySettings,
     typingText,
     isTestActive,
     isTestComplete,
@@ -181,6 +196,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
     // State setters
     updateSettings,
+    updateDisplaySettings,
     updateMetrics,
     setRemainingTime,
     setStartTime,

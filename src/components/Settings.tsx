@@ -1,26 +1,17 @@
 import { Component, createSignal } from "solid-js";
-import { useTyping } from "../context/TypingContext";
-import { useStyling } from "../context/StylingContext";
-import SliderHandle from "./SliderHandle";
-import Tooltip from "./Tooltip";
-import Button from "./Button";
-import { setCurrentMinValue, setCurrentMaxValue } from "../App";
 
-export type TestMode = "time" | "words";
-export type TimeOption = 15 | 30 | 60 | 120;
-export type WordCountOption = 10 | 25 | 50 | 100;
-
-export interface TestSettings {
-  mode: TestMode;
-  timeSeconds?: TimeOption;
-  wordCount?: WordCountOption;
-  targetBracket?: { enabled: boolean; min: number; max: number };
-}
+import { useTyping } from "@/contexts/TypingContext";
+import { useStyling } from "@/contexts/StylingContext";
+import SliderHandle from "@/components/SliderHandle";
+import Tooltip from "@/components/Tooltip";
+import Button from "@/components/Button";
+import { TimeOption, WordCountOption } from "@/types/context/TypingContextTypes";
 
 const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
-  const { settings, updateSettings } = useTyping();
+  const { settings, updateSettings, displaySettings, updateDisplaySettings } =
+    useTyping();
   const { showKeyboardVisualizer, setShowKeyboardVisualizer } = useStyling();
 
   // Local state for displaying values during dragging
@@ -38,7 +29,13 @@ const Settings: Component = () => {
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
     setDisplayMin(newMin);
     // Update the app-level signal
-    setCurrentMinValue(newMin);
+    updateDisplaySettings({
+      ...displaySettings(),
+      targetBracket: {
+        ...displaySettings().targetBracket,
+        min: newMin,
+      },
+    });
   };
 
   const handleMaxChange = (newMax: number) => {
@@ -48,7 +45,13 @@ const Settings: Component = () => {
     newMax = Math.max(newMax, currentMin + minDistance);
     setDisplayMax(newMax);
     // Update the app-level signal
-    setCurrentMaxValue(newMax);
+    updateDisplaySettings({
+      ...displaySettings(),
+      targetBracket: {
+        ...displaySettings().targetBracket,
+        max: newMax,
+      },
+    });
   };
 
   const handleMinDragEnd = (newMin: number) => {
@@ -67,8 +70,14 @@ const Settings: Component = () => {
     });
 
     // Reset the app-level signals when drag ends
-    setCurrentMinValue(undefined);
-    setCurrentMaxValue(undefined);
+    updateDisplaySettings({
+      ...displaySettings(),
+      targetBracket: {
+        ...displaySettings().targetBracket,
+        min: undefined,
+        max: undefined,
+      },
+    });
   };
 
   const handleMaxDragEnd = (newMax: number) => {
@@ -87,8 +96,14 @@ const Settings: Component = () => {
     });
 
     // Reset the app-level signals when drag ends
-    setCurrentMinValue(undefined);
-    setCurrentMaxValue(undefined);
+    updateDisplaySettings({
+      ...displaySettings(),
+      targetBracket: {
+        ...displaySettings().targetBracket,
+        min: undefined,
+        max: undefined,
+      },
+    });
   };
 
   // Keep local display values in sync with settings
@@ -269,7 +284,13 @@ const Settings: Component = () => {
                       newPos = Math.max(0.01, newPos);
                       setDisplayMin(newPos);
                       // Update the app-level signal
-                      setCurrentMinValue(newPos);
+                      updateDisplaySettings({
+                        ...displaySettings(),
+                        targetBracket: {
+                          ...displaySettings().targetBracket,
+                          min: newPos,
+                        },
+                      });
                     }}
                     onDragEnd={(newPos) => {
                       // Enforce minimum of 0.01
@@ -282,9 +303,15 @@ const Settings: Component = () => {
                           max: settings().targetBracket?.max || 0.7,
                         },
                       });
-                      
+
                       // Reset the app-level signals when drag ends
-                      setCurrentMinValue(undefined);
+                      updateDisplaySettings({
+                        ...displaySettings(),
+                        targetBracket: {
+                          ...displaySettings().targetBracket,
+                          min: undefined,
+                        },
+                      });
                     }}
                   />
 

@@ -1,10 +1,6 @@
-import englishWords from "../static/languages/english.json";
+import { LanguageData } from "@/types/services/WordServiceTypes";
 
-interface LanguageData {
-  name: string;
-  orderedByFrequency: boolean;
-  words: string[];
-}
+import englishWords from "@/static/languages/english.json";
 
 class WordService {
   private words: string[];
@@ -22,44 +18,25 @@ class WordService {
   generateWordSet(count: number): string {
     if (count <= 0) return "";
 
-    const selectedWords: string[] = [];
+    let selectedWords: string[] = [];
 
-    // Get random words from the word list
     for (let i = 0; i < count; i++) {
       const randomIndex = Math.floor(Math.random() * this.words.length);
       selectedWords.push(this.words[randomIndex]);
     }
 
-    // Save the current word set
+    // Remove repeated words
+    selectedWords = selectedWords.filter(
+      (word, index, self) => self.indexOf(word) === index
+    );
+
     this.currentWordSet = selectedWords;
 
     return selectedWords.join(" ");
   }
 
   /**
-   * Generates an infinite stream of words that can be used
-   * for timed tests (returns enough words to guarantee the user
-   * won't finish them all)
-   */
-  generateInfiniteWordSet(approximateWordCount: number = 200): string {
-    // For timed tests, generate more words than they could possibly type
-    const selectedWords: string[] = [];
-
-    // Get random words from the word list
-    for (let i = 0; i < approximateWordCount; i++) {
-      const randomIndex = Math.floor(Math.random() * this.words.length);
-      selectedWords.push(this.words[randomIndex]);
-    }
-
-    // Save the current word set
-    this.currentWordSet = selectedWords;
-
-    return selectedWords.join(" ");
-  }
-
-  /**
-   * Add more words to the current word set, useful for
-   * infinite typing tests to append as the user types
+   * Add more words to an existing word set
    */
   appendMoreWords(count: number = 20): string {
     if (count <= 0) return "";
