@@ -1,10 +1,11 @@
-import { createSignal, onMount, Show } from "solid-js";
+import { Component, createSignal, onMount, Show } from "solid-js";
 import { Portal } from "solid-js/web";
+
 import localStorageService from "@/services/LocalStorageService";
 import { useTyping } from "@/contexts/TypingContext";
 import SampleVisualizer from "./SampleVisualizer";
 
-export default function Onboarding() {
+const Onboarding: Component = () => {
   const [isOpen, setIsOpen] = createSignal(false);
   const { updateInitialSettings, initialSettings, randomizeBracket } =
     useTyping();
@@ -84,4 +85,6 @@ export default function Onboarding() {
       </Portal>
     </Show>
   );
-}
+};
+
+export default Onboarding;
