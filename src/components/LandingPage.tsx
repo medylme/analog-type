@@ -22,7 +22,7 @@ const LandingPage: Component = () => {
         </div>
 
         <p class="mb-8 text-lg text-pretty">
-          Connect your <b>Wooting keyboard</b> to play!
+          Connect a <b>Wooting keyboard</b> to start typing!
         </p>
 
         <button
