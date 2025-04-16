@@ -2,8 +2,7 @@ import { Component, createSignal, createEffect } from "solid-js";
 import { Transition } from "solid-transition-group";
 
 import { useTyping } from "@/contexts/TypingContext";
-
-import { Odometer } from "@/components/Odometer";
+import Odometer from "@/components/ui/Odometer";
 
 const Metrics: Component = () => {
   const {

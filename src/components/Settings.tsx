@@ -2,9 +2,9 @@ import { Component, createSignal } from "solid-js";
 
 import { useTyping } from "@/contexts/TypingContext";
 import { useStyling } from "@/contexts/StylingContext";
-import SliderHandle from "@/components/SliderHandle";
-import Tooltip from "@/components/Tooltip";
-import Button from "@/components/Button";
+import SliderHandle from "@/components/ui/SliderHandle";
+import Tooltip from "@/components/ui/Tooltip";
+import Button from "@/components/ui/Button";
 import { TimeOption, WordCountOption } from "@/types/context/TypingContextTypes";
 
 const Settings: Component = () => {

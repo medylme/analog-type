@@ -1,7 +1,5 @@
 import { Component, Index, createMemo, Show, mergeProps } from "solid-js";
 
-import "./styles.css";
-
 export type OdometerProps = {
   number: number;
   speed: number;
@@ -12,7 +10,7 @@ export type OdometerProps = {
   class?: string;
 };
 
-export const Odometer: Component<OdometerProps> = (inProps) => {
+const Odometer: Component<OdometerProps> = (inProps) => {
   const props = mergeProps({ digits: 0, width: 0.9 }, inProps);
   const chars = createMemo(() => {
     let c = props.number.toString().split("");
@@ -22,12 +20,10 @@ export const Odometer: Component<OdometerProps> = (inProps) => {
     while (c.length < props.digits) c.unshift("0");
     return c;
   });
+
   return (
     <div
-      class="odometer"
-      classList={{
-        [`${props.class}`]: !!props.class,
-      }}
+      class={`inline-block ${props.class || ""}`}
       style={{
         "font-size": `${props.size}px`,
         "line-height": `${props.size}px`,
@@ -41,10 +37,17 @@ export const Odometer: Component<OdometerProps> = (inProps) => {
                 props.separator && i !== 0 && (chars().length - i) % 3 === 0
               }
             >
-              <div class="separator">,</div>
+              <div class="inline-block">,</div>
             </Show>
-            <div class="digit" style={{ width: `${props.width}em` }}>
+            <div
+              class="inline-block overflow-hidden text-center"
+              style={{
+                width: `${props.width}em`,
+                height: "1em",
+              }}
+            >
               <div
+                class="[animation-iteration-count:1] [animation-timing-function:linear]"
                 style={{
                   transform: `translateY(-${digit()}em)`,
                   "animation-name": `slide${digit()}`,
@@ -62,3 +65,5 @@ export const Odometer: Component<OdometerProps> = (inProps) => {
     </div>
   );
 };
+
+export default Odometer;
