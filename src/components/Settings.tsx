@@ -211,8 +211,8 @@ const Settings: Component = () => {
                   <>
                     <b>Normal:</b> Typing as usual with an actuation point.
                     <br /> <br />
-                    <b>Analog-ony:</b> Keep your inputs within the range. Press
-                    too far and it doesn't count!
+                    <b>Agony:</b> Keep your inputs within the range. Press too
+                    far and it doesn't count!
                   </>
                 }
               >
