@@ -10,19 +10,20 @@ const LandingPage: Component = () => {
       <div class="w-full max-w-lg space-y-8 rounded-xl bg-stone-800 p-8 text-center shadow-xl">
         <h1 class="mb-6 text-4xl font-bold">Analog-type</h1>
 
-        <div class="mb-6">
-          <img
-            src="/logo.png"
-            alt="Wooting Keyboard"
-            class="mx-auto h-32 w-32"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
-        </div>
-
-        <p class="mb-8 text-lg text-pretty">
+        <p class="mb-4 text-lg text-pretty">
           Connect a <b>Wooting keyboard</b> to start typing!
+        </p>
+        <p class="mb-8 text-sm">
+          Make sure you use a browser compatible with the{" "}
+          <a
+            class="underline"
+            target="_blank"
+            href="https://developer.mozilla.org/en-US/docs/Web/API/WebHID_API#browser_compatibility"
+          >
+            WebHID API
+          </a>
+          {". "}
+          <span class="text-stone-400">(Chrome 89+, Edge 89+, Opera 75+)</span>
         </p>
 
         <button
@@ -32,20 +33,9 @@ const LandingPage: Component = () => {
           Connect
         </button>
 
-        <ul class="text-sm text-gray-300">
-          <li>
-            Make sure you use a browser compatible with the{" "}
-            <a
-              class="underline"
-              target="_blank"
-              href="https://developer.mozilla.org/en-US/docs/Web/API/WebHID_API#browser_compatibility"
-            >
-              WebHID API
-            </a>
-            {". "}
-            <span class="text-gray-400">(Chrome 89+, Edge 89+, Opera 75+)</span>
-          </li>
-        </ul>
+        <p class="text-xs text-stone-500">
+          Built for a Wooting gamejam in a single day.
+        </p>
       </div>
     </div>
   );
