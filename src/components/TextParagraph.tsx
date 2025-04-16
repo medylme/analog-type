@@ -21,6 +21,7 @@ type KeyActuationState = {
 const TypeRacer: Component = () => {
   const {
     initialSettings,
+    runningSettings,
     typingText,
     isTestComplete,
     updateMetrics,
@@ -68,7 +69,17 @@ const TypeRacer: Component = () => {
     if (!isWindowFocused()) return;
 
     const currentKeys = pressedKeys();
-    const targetBracket = initialSettings().targetBracket;
+    const targetBracket = {
+      ...initialSettings().targetBracket,
+      min:
+        runningSettings().targetBracket?.min ??
+        initialSettings().targetBracket?.min ??
+        0,
+      max:
+        runningSettings().targetBracket?.max ??
+        initialSettings().targetBracket?.max ??
+        1,
+    };
 
     if (!targetBracket || currentKeys.length === 0) return;
 
@@ -231,7 +242,10 @@ const TypeRacer: Component = () => {
 
       if (startTime() === null) {
         setStartTime(Date.now());
-        if (initialSettings().mode === "time" && initialSettings().timeSeconds) {
+        if (
+          initialSettings().mode === "time" &&
+          initialSettings().timeSeconds
+        ) {
           setRemainingTime(initialSettings().timeSeconds);
           startCountdown();
         }

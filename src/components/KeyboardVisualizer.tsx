@@ -27,13 +27,13 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
             const targetBracket = {
               ...initialSettings().targetBracket,
               min:
-                runningSettings().targetBracket?.min !== undefined
-                  ? runningSettings().targetBracket?.min
-                  : initialSettings().targetBracket?.min || 0,
+                runningSettings().targetBracket?.min ??
+                initialSettings().targetBracket?.min ??
+                0,
               max:
-                runningSettings().targetBracket?.max !== undefined
-                  ? runningSettings().targetBracket?.max
-                  : initialSettings().targetBracket?.max || 1,
+                runningSettings().targetBracket?.max ??
+                initialSettings().targetBracket?.max ??
+                1,
             };
 
             return (
