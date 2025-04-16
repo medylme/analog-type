@@ -381,24 +381,29 @@ const TypeRacer: Component = () => {
       }
     }
 
-    // Scroll when needed
-    if (currentLineIndex > 1) {
+    // Check if we're at the end of a word
+    const isAtWordEnd =
+      currentPos > 0 &&
+      (displayText()[currentPos - 1] === " " ||
+        displayText()[currentPos - 1] === "\n");
+
+    if (
+      currentLineIndex > 1 &&
+      isAtWordEnd &&
+      currentPos >= lineStarts[currentLineIndex]
+    ) {
       const linesToScroll = Math.max(0, currentLineIndex - 1);
 
       setScrollOffset(linesToScroll * getLineHeight());
 
-      // Apply scroll
       if (textDisplayRef) {
         textDisplayRef.style.transform = `translateY(-${scrollOffset()}px)`;
       }
-    } else if (currentLineIndex === 1) {
+    } else if (currentLineIndex === 1 && isAtWordEnd) {
       const thirdLineStart =
         lineStarts.length > 2 ? lineStarts[2] : displayText().length;
 
-      const isAtWordEnd =
-        currentPos > 0 && displayText()[currentPos - 1] === " ";
-
-      if (isAtWordEnd && currentPos > thirdLineStart) {
+      if (currentPos >= thirdLineStart) {
         setScrollOffset(getLineHeight());
 
         if (textDisplayRef) {
@@ -754,13 +759,13 @@ const TypeRacer: Component = () => {
 
   return (
     <div
-      class="type-racer-wrapper overflow-hidden"
+      class="overflow-hidden"
       tabIndex={-1}
       onFocus={() => inputRef?.focus()}
       onBlur={() => setTimeout(() => inputRef?.focus(), 10)}
     >
       <Transition
-        name="typeracer"
+        name="text-paragraph"
         enterActiveClass="transition-all duration-1000 ease-in-out"
         enterClass="opacity-0 transform"
         enterToClass="opacity-100 transform"
@@ -788,6 +793,7 @@ const TypeRacer: Component = () => {
                 style={{
                   transform: `translateY(-${scrollOffset()}px)`,
                   filter: isWindowFocused() ? "none" : "blur(4px)",
+                  transition: "transform 0.3s ease-in-out",
                 }}
               >
                 {displayText()
@@ -832,7 +838,7 @@ const TypeRacer: Component = () => {
             <input
               ref={inputRef}
               type="text"
-              class="absolute opacity-0 focus:outline-none"
+              class="absolute text-balance opacity-0 focus:outline-none"
               value={currentInput()}
               disabled={false}
               onClick={(e) => e.stopPropagation()}
