@@ -162,16 +162,14 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
     );
   }
 
-  // Define constants outside of render loop to avoid recalculations
-  const keySize = 2.8; // Smaller base size
-  const keyHeight = 2.8; // Key height (in rem)
-  const rowSpacing = 3.2; // Much larger vertical spacing
-  const colSpacing = 3.2; // Fixed column spacing
+  // Values in rem
+  const keySize = 2.8;
+  const keyHeight = 2.8;
+  const rowSpacing = 3.2;
+  const colSpacing = 3.2;
 
-  // Memoize pressed keys lookup for better performance
   const getPressedKeyValue = createMemo(() => {
     const keys = pressedKeys();
-    // Create a lookup map for quick access
     const keyMap = new Map();
     keys.forEach((key) => {
       keyMap.set(key.code, key.value);
@@ -180,7 +178,6 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
     return (code: number) => keyMap.get(code) || 0;
   });
 
-  // Create a stable component for each key to avoid re-rendering the entire keyboard
   const KeyComponent = (props: { key: KeyData }) => {
     const keyValue = createMemo(() => getPressedKeyValue()(props.key.code));
 

@@ -35,7 +35,6 @@ const Metrics: Component = () => {
   // When test completes, set the final elapsed time
   createEffect(() => {
     if (isTestComplete() && startTime() !== null) {
-      // Calculate and freeze the final elapsed time
       setElapsedTime(Math.floor((Date.now() - startTime()) / 1000));
     }
   });

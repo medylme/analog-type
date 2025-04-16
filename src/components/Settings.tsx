@@ -1,4 +1,4 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, Show } from "solid-js";
 
 import { useTyping } from "@/contexts/TypingContext";
 import { useStyling } from "@/contexts/StylingContext";
@@ -8,34 +8,42 @@ import Button from "@/components/ui/Button";
 import {
   TimeOption,
   WordCountOption,
+  DifficultyLevel,
 } from "@/types/context/TypingContextTypes";
 
 const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
+  const difficultyOptions: DifficultyLevel[] = [
+    "easy",
+    "normal",
+    "hard",
+    "agony",
+  ];
+
   const {
     initialSettings,
-    updateTestSettings,
+    updateInitialSettings: updateTestSettings,
     runningSettings,
     updateRunningSettings,
+    randomizeBracket,
   } = useTyping();
+
   const { showKeyboardVisualizer, setShowKeyboardVisualizer } = useStyling();
 
-  // Local state for displaying values during dragging
-  const [displayMin, setDisplayMin] = createSignal(
-    initialSettings().targetBracket?.min || 0
-  );
-  const [displayMax, setDisplayMax] = createSignal(
-    initialSettings().targetBracket?.max || 1
-  );
+  const displayMin = () =>
+    runningSettings().targetBracket?.min ??
+    initialSettings().targetBracket?.min ??
+    0;
+  const displayMax = () =>
+    runningSettings().targetBracket?.max ??
+    initialSettings().targetBracket?.max ??
+    1;
 
   const handleMinChange = (newMin: number) => {
-    // For display only during dragging
     const currentMax = initialSettings().targetBracket?.max || 1;
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
-    setDisplayMin(newMin);
-    // Update the app-level signal
     updateRunningSettings({
       ...runningSettings(),
       targetBracket: {
@@ -46,12 +54,9 @@ const Settings: Component = () => {
   };
 
   const handleMaxChange = (newMax: number) => {
-    // For display only during dragging
     const currentMin = initialSettings().targetBracket?.min || 0;
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
-    setDisplayMax(newMax);
-    // Update the app-level signal
     updateRunningSettings({
       ...runningSettings(),
       targetBracket: {
@@ -62,7 +67,6 @@ const Settings: Component = () => {
   };
 
   const handleMinDragEnd = (newMin: number) => {
-    // Update actual settings when drag ends
     const currentMax = initialSettings().targetBracket?.max || 1;
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
@@ -76,7 +80,6 @@ const Settings: Component = () => {
       },
     });
 
-    // Reset the app-level signals when drag ends
     updateRunningSettings({
       ...runningSettings(),
       targetBracket: {
@@ -88,7 +91,6 @@ const Settings: Component = () => {
   };
 
   const handleMaxDragEnd = (newMax: number) => {
-    // Update actual settings when drag ends
     const currentMin = initialSettings().targetBracket?.min || 0;
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
@@ -102,7 +104,6 @@ const Settings: Component = () => {
       },
     });
 
-    // Reset the app-level signals when drag ends
     updateRunningSettings({
       ...runningSettings(),
       targetBracket: {
@@ -113,19 +114,11 @@ const Settings: Component = () => {
     });
   };
 
-  // Keep local display values in sync with settings
-  if (displayMin() !== initialSettings().targetBracket?.min) {
-    setDisplayMin(initialSettings().targetBracket?.min || 0);
-  }
-  if (displayMax() !== initialSettings().targetBracket?.max) {
-    setDisplayMax(initialSettings().targetBracket?.max || 1);
-  }
-
   return (
-    <div class="mb-6 rounded-lg bg-stone-800 p-4 text-white">
-      <div class="flex flex-col gap-6 md:flex-row">
+    <div class="mb-6 flex flex-col gap-4 rounded-lg bg-stone-800 p-6 text-white">
+      <div class="flex flex-row items-start gap-24">
         {/* Mode Selection */}
-        <div class="flex-1">
+        <div>
           <h3 class="mb-2 text-lg font-medium">Test Mode</h3>
           <div class="flex gap-2">
             <Button
@@ -203,83 +196,152 @@ const Settings: Component = () => {
           </div>
         </div>
 
+        {/* Keyboard Visualizer Toggle */}
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-medium">Show Keyboard</h3>
+          <Tooltip
+            position="bottom"
+            width="200px"
+            content="Shows a keyboard visualizer of your inputs. This might come with a small performance hit."
+          >
+            ?
+          </Tooltip>
+          <label class="inline-flex cursor-pointer items-center">
+            <input
+              type="checkbox"
+              class="peer sr-only"
+              checked={showKeyboardVisualizer()}
+              onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
+            />
+            <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+          </label>
+        </div>
+      </div>
+      <div class="flex flex-row items-end gap-24">
         {/* Target Bracket */}
-        <div class="flex flex-1 flex-col gap-2">
-          <div class="mb-2 flex flex-col gap-2">
-            <div class="flex flex-row items-center gap-2">
-              <h3 class="text-lg font-medium">Typing Mode</h3>
-              <Tooltip
-                position="bottom"
-                width="300px"
-                content={
-                  <>
-                    <b>Normal:</b> Typing as usual with an actuation point.
-                    <br /> <br />
-                    <b>Agony:</b> Keep your inputs within the range. Press too
-                    far and it doesn't count!
-                  </>
-                }
-              >
-                ?
-              </Tooltip>
-            </div>
-            <div class="flex flex-row gap-2">
-              <Button
-                selected={!initialSettings().targetBracket?.enabled}
-                onClick={() => {
-                  updateTestSettings({
-                    ...initialSettings(),
-                    targetBracket: {
-                      enabled: false,
-                      min: 0.4,
-                      max: 0.8,
-                    },
-                  });
-                }}
-              >
-                Normal
-              </Button>
-              <Button
-                selected={initialSettings().targetBracket?.enabled}
-                onClick={() => {
-                  updateTestSettings({
-                    ...initialSettings(),
-                    targetBracket: {
-                      enabled: true,
-                      min: 0.2,
-                      max: 0.8,
-                    },
-                  });
-                }}
-              >
-                Agony
-              </Button>
-            </div>
-
-            {/*
-                  <label class="inline-flex cursor-pointer items-center">
-              <input
-                type="checkbox"
-                class="peer sr-only"
-                checked={settings().targetBracket?.enabled || false}
-                onChange={(e) => {
-                  updateInitialSettings({
-                    ...settings(),
-                    targetBracket: {
-                      enabled: e.target.checked,
-                      min: e.target.checked ? 0.2 : 0.4,
-                      max: 0.8,
-                    },
-                  });
-                }}
-              />
-              <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
-            </label>
-              */}
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-row items-center gap-2">
+            <h3 class="text-lg font-medium">Actuation</h3>
+            <Tooltip
+              position="bottom"
+              width="300px"
+              content={
+                <>
+                  <b>Point:</b> Normal typing.
+                  <br /> <br />
+                  <b>Bracket:</b> Keep your inputs within the range. Press too
+                  far and it doesn't count!
+                </>
+              }
+            >
+              ?
+            </Tooltip>
           </div>
+          <div class="flex flex-row gap-2">
+            <Button
+              selected={!initialSettings().targetBracket?.enabled}
+              onClick={() => {
+                updateTestSettings({
+                  ...initialSettings(),
+                  targetBracket: {
+                    enabled: false,
+                    min: 0.4,
+                    max: 0.8,
+                  },
+                });
+              }}
+            >
+              Point
+            </Button>
+            <Button
+              selected={initialSettings().targetBracket?.enabled}
+              onClick={() => {
+                updateTestSettings({
+                  ...initialSettings(),
+                  targetBracket: {
+                    enabled: true,
+                    min: 0.2,
+                    max: 0.8,
+                  },
+                });
+              }}
+            >
+              Bracket
+            </Button>
+          </div>
+        </div>
 
-          <div class="py-2">
-            <div class="relative h-8">
+        {/* Challenge Type Selection */}
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-row items-center gap-2">
+            <h3 class="text-lg font-medium">Mode</h3>
+            <Tooltip
+              position="bottom"
+              width="300px"
+              content={
+                <>
+                  <b>Static:</b> Settings stay fixed.
+                  <br /> <br />
+                  <b>Challenge:</b> Settings change as you type, with
+                  difficulty-based randomization.
+                </>
+              }
+            >
+              ?
+            </Tooltip>
+          </div>
+          <div class="flex flex-row gap-2">
+            <Button
+              selected={initialSettings().challengeType === "static"}
+              onClick={() => {
+                updateTestSettings({
+                  ...initialSettings(),
+                  challengeType: "static",
+                });
+              }}
+            >
+              Static
+            </Button>
+            <Button
+              selected={initialSettings().challengeType === "challenge"}
+              onClick={() => {
+                updateTestSettings({
+                  ...initialSettings(),
+                  challengeType: "challenge",
+                });
+              }}
+            >
+              Challenge
+            </Button>
+          </div>
+        </div>
+
+        {/* Difficulty Level Selection - only shown in challenge mode */}
+        <Show when={initialSettings().challengeType === "challenge"}>
+          <div class="flex flex-col gap-2">
+            <h3 class="text-lg font-medium">Difficulty</h3>
+            <div class="flex flex-row gap-2">
+              {difficultyOptions.map((level) => (
+                <Button
+                  selected={initialSettings().difficultyLevel === level}
+                  onClick={() => {
+                    updateTestSettings({
+                      ...initialSettings(),
+                      difficultyLevel: level,
+                    });
+                    randomizeBracket();
+                  }}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </Show>
+        {/* Only show slider controls in static mode */}
+        <Show when={initialSettings().challengeType === "static"}>
+          <div class="mt-10 flex w-64">
+            <div class="relative h-8 w-full">
               {/* Slider track */}
               <div class="absolute top-3 h-2 w-full rounded-full bg-stone-700"></div>
 
@@ -331,10 +393,7 @@ const Settings: Component = () => {
                     position={displayMin()}
                     enabled={true}
                     onPositionChange={(newPos) => {
-                      // Enforce minimum of 0.01
                       newPos = Math.max(0.01, newPos);
-                      setDisplayMin(newPos);
-                      // Update the app-level signal
                       updateRunningSettings({
                         ...runningSettings(),
                         targetBracket: {
@@ -344,7 +403,6 @@ const Settings: Component = () => {
                       });
                     }}
                     onDragEnd={(newPos) => {
-                      // Enforce minimum of 0.01
                       newPos = Math.max(0.01, newPos);
                       updateTestSettings({
                         ...initialSettings(),
@@ -355,7 +413,6 @@ const Settings: Component = () => {
                         },
                       });
 
-                      // Reset the app-level signals when drag ends
                       updateRunningSettings({
                         ...runningSettings(),
                         targetBracket: {
@@ -374,27 +431,69 @@ const Settings: Component = () => {
               )}
             </div>
           </div>
+        </Show>
 
-          {/* Keyboard Visualizer Toggle */}
-          <div class="mb-2 flex items-center gap-2">
-            <h3 class="text-sm font-medium">Show Keyboard</h3>
-            <Tooltip
-              position="bottom"
-              width="200px"
-              content="This might come with a small performance hit."
+        {/* Explanation of current settings */}
+        <div class="rounded-md bg-stone-700 p-3 text-sm">
+          <p class="mb-2 font-medium">
+            {initialSettings().mode === "time" ? (
+              <>Time ({initialSettings().timeSeconds}s)</>
+            ) : (
+              <>Words ({initialSettings().wordCount})</>
+            )}
+            {" - "}
+            {initialSettings().targetBracket?.enabled ? "Bracket" : "Point"}
+            {" - "}
+            {initialSettings().challengeType === "challenge"
+              ? "Challenge"
+              : "Static"}
+            <span
+              class="data-[visible=false]:hidden"
+              data-visible={initialSettings().challengeType === "challenge"}
             >
-              ?
-            </Tooltip>
-            <label class="inline-flex cursor-pointer items-center">
-              <input
-                type="checkbox"
-                class="peer sr-only"
-                checked={showKeyboardVisualizer()}
-                onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
-              />
-              <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
-            </label>
-          </div>
+              {" "}
+              (
+              {initialSettings().difficultyLevel.charAt(0).toUpperCase() +
+                initialSettings().difficultyLevel.slice(1)}
+              ){" "}
+            </span>
+          </p>
+          <p class="mb-2 font-medium"></p>
+          <p class="text-stone-300">
+            {initialSettings().challengeType === "static" ? (
+              <>
+                Set a custom{" "}
+                {initialSettings().targetBracket?.enabled
+                  ? "bracket"
+                  : "actuation point"}{" "}
+                yourself.
+              </>
+            ) : (
+              <>
+                {initialSettings().targetBracket?.enabled ? (
+                  <>
+                    {initialSettings().difficultyLevel === "easy"
+                      ? "Large bracket sizes to get used to it."
+                      : initialSettings().difficultyLevel === "normal"
+                        ? "Moderate bracket sizes for a balanced challenge."
+                        : initialSettings().difficultyLevel === "hard"
+                          ? "Small bracket sizes that will test you."
+                          : "Pure agony."}
+                  </>
+                ) : (
+                  <>
+                    {initialSettings().difficultyLevel === "easy"
+                      ? "Smaller changes for an easier challenge."
+                      : initialSettings().difficultyLevel === "normal"
+                        ? "Moderate changes for a balanced challenge."
+                        : initialSettings().difficultyLevel === "hard"
+                          ? "Larger changes that will most likely annoy you."
+                          : "Pure agony."}
+                  </>
+                )}
+              </>
+            )}
+          </p>
         </div>
       </div>
     </div>

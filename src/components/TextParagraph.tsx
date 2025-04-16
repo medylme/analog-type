@@ -7,6 +7,7 @@ import {
 } from "solid-js";
 import { Transition } from "solid-transition-group";
 
+import { KEY_MAP } from "@/constants/InputContextConstants";
 import { useTyping } from "@/contexts/TypingContext";
 import { useKeyboard } from "@/contexts/InputContext";
 import wordService from "@/services/WordService";
@@ -30,20 +31,17 @@ const TypeRacer: Component = () => {
     setRemainingTime,
     startCountdown,
     completeTest,
+    randomizeBracket,
   } = useTyping();
 
   const { pressedKeys } = useKeyboard();
 
-  // Track actuation state of keys
   const [keyActuationStates, setKeyActuationStates] = createSignal<
     Record<number, KeyActuationState>
   >({});
-
-  // Track last detected actuation to prevent duplicates
   const [lastActuatedKeys, setLastActuatedKeys] = createSignal<Set<number>>(
     new Set()
   );
-
   const [currentInput, setCurrentInput] = createSignal("");
   const [currentIndex, setCurrentIndex] = createSignal(0);
   const [cursorPosition, setCursorPosition] = createSignal({ left: 0, top: 0 });
@@ -88,11 +86,9 @@ const TypeRacer: Component = () => {
 
     // Handle each pressed key
     currentKeys.forEach((key) => {
-      // Skip keys with very small values that might be noise
       if (key.value < 0.01) return;
 
       if (targetBracket.enabled) {
-        // Get the current state for this key
         const keyState = keyActuationStates()[key.code];
 
         // If key is currently ignored because it went past max, check if it's been released
@@ -112,11 +108,9 @@ const TypeRacer: Component = () => {
         else if (!keyState?.wasAboveMax) {
           // Check if key has crossed the min threshold and hasn't been actuated yet
           if (key.value >= targetBracket.min && !lastActuated.has(key.code)) {
-            // Actuate the key
             actuationsToTrigger.push(key.code);
             lastActuated.add(key.code);
 
-            // Mark this key as actuated
             setKeyActuationStates((prev) => ({
               ...prev,
               [key.code]: {
@@ -205,7 +199,6 @@ const TypeRacer: Component = () => {
     setCurrentInput(newInput);
     setCurrentIndex(newInput.length);
 
-    // Update UI state
     setShouldAnimate(false);
     updateScrollPosition();
 
@@ -222,7 +215,6 @@ const TypeRacer: Component = () => {
   const triggerKeyInput = (keyCode: number) => {
     if (isTestComplete()) return;
 
-    // Get character based on key code
     const char = getCharFromKeyCode(keyCode);
     if (!char) return;
 
@@ -240,6 +232,14 @@ const TypeRacer: Component = () => {
       setCurrentInput(newInput);
       setCurrentIndex(newInput.length);
 
+      // Check if we've completed a line and should randomize the bracket
+      if (
+        initialSettings().challengeType === "challenge" &&
+        checkForLineCompletion(currentIndex() - 1)
+      ) {
+        randomizeBracket();
+      }
+
       if (startTime() === null) {
         setStartTime(Date.now());
         if (
@@ -252,7 +252,6 @@ const TypeRacer: Component = () => {
       }
     }
 
-    // Update UI state
     setShouldAnimate(false);
     updateScrollPosition();
     appendMoreTextIfNeeded();
@@ -276,55 +275,13 @@ const TypeRacer: Component = () => {
 
   // Convert key code to character
   const getCharFromKeyCode = (keyCode: number): string | null => {
-    // This is a simplified mapping - in a real implementation, you'd handle modifiers and more keys
-    const keyMap: Record<number, string> = {
-      0x04: "a",
-      0x05: "b",
-      0x06: "c",
-      0x07: "d",
-      0x08: "e",
-      0x09: "f",
-      0x0a: "g",
-      0x0b: "h",
-      0x0c: "i",
-      0x0d: "j",
-      0x0e: "k",
-      0x0f: "l",
-      0x10: "m",
-      0x11: "n",
-      0x12: "o",
-      0x13: "p",
-      0x14: "q",
-      0x15: "r",
-      0x16: "s",
-      0x17: "t",
-      0x18: "u",
-      0x19: "v",
-      0x1a: "w",
-      0x1b: "x",
-      0x1c: "y",
-      0x1d: "z",
-      0x1e: "1",
-      0x1f: "2",
-      0x20: "3",
-      0x21: "4",
-      0x22: "5",
-      0x23: "6",
-      0x24: "7",
-      0x25: "8",
-      0x26: "9",
-      0x27: "0",
-      0x2c: " ", // Space
-      0x2a: "Backspace",
-    };
-
-    return keyMap[keyCode] || null;
+    return KEY_MAP[keyCode] || null;
   };
 
   // Lines management functions
   const getLineHeight = (): number => {
     if (lineHeight) return lineHeight;
-    if (!textContainerRef) return 24; // default fallback
+    if (!textContainerRef) return 24;
 
     // Get computed line height from the container
     const computedStyle = window.getComputedStyle(textContainerRef);
@@ -366,8 +323,7 @@ const TypeRacer: Component = () => {
     const lineStarts: number[] = [0];
     let currPos = 0;
 
-    // This is an approximation - actual line breaks depend on text wrapping
-    // Create a temporary span to measure text
+    // Approximation of line breaks
     const measureSpan = document.createElement("span");
     measureSpan.style.visibility = "hidden";
     measureSpan.style.position = "absolute";
@@ -377,17 +333,14 @@ const TypeRacer: Component = () => {
     measureSpan.style.font = window.getComputedStyle(textDisplayRef).font;
     document.body.appendChild(measureSpan);
 
-    // Process text to find line breaks based on container width
     while (currPos < text.length) {
       const lineEnd = getLineEndPosition(text, currPos);
       const lineText = text.substring(currPos, lineEnd);
 
-      // Measure this text
       measureSpan.textContent = lineText;
       const textHeight = measureSpan.offsetHeight;
       const textLines = Math.round(textHeight / getLineHeight());
 
-      // If this text wraps to multiple lines, we need to find approximate line breaks
       if (textLines > 1) {
         let approxCharsPerLine = Math.ceil(lineText.length / textLines);
         for (let i = 1; i < textLines; i++) {
@@ -428,14 +381,10 @@ const TypeRacer: Component = () => {
       }
     }
 
-    // We need to determine if we're at the end of the second line before scrolling
+    // Scroll when needed
     if (currentLineIndex > 1) {
-      // We're on the third line or beyond
-      // Calculate how many lines we need to scroll up to keep the current line in view
-      // but with one line of context above it
       const linesToScroll = Math.max(0, currentLineIndex - 1);
 
-      // Update the scroll offset and the top visible line
       setScrollOffset(linesToScroll * getLineHeight());
 
       // Apply scroll
@@ -443,23 +392,13 @@ const TypeRacer: Component = () => {
         textDisplayRef.style.transform = `translateY(-${scrollOffset()}px)`;
       }
     } else if (currentLineIndex === 1) {
-      // We're on the second line - check if we're at the end of a word near the end of the line
-      // First, find where the third line starts
       const thirdLineStart =
         lineStarts.length > 2 ? lineStarts[2] : displayText().length;
 
-      // Check if we're close to the third line start and just completed a word
       const isAtWordEnd =
         currentPos > 0 && displayText()[currentPos - 1] === " ";
 
-      // Calculate how close we are to the start of the third line (as percentage of second line)
-      const secondLineLength = thirdLineStart - lineStarts[1];
-      const positionInSecondLine = currentPos - lineStarts[1];
-      const percentageOfSecondLine = positionInSecondLine / secondLineLength;
-
-      // Only scroll if we've completed a word and are at least 80% through the second line
-      if (isAtWordEnd && percentageOfSecondLine >= 0.8) {
-        // Start scrolling - set the offset to show part of the third line
+      if (isAtWordEnd && currentPos > thirdLineStart) {
         setScrollOffset(getLineHeight());
 
         if (textDisplayRef) {
@@ -470,12 +409,10 @@ const TypeRacer: Component = () => {
   };
 
   const appendMoreTextIfNeeded = () => {
-    // Only append more text for timed mode
     if (
       initialSettings().mode === "time" &&
       currentIndex() > nextGenerationPoint()
     ) {
-      // Generate more text and append it
       const additionalText = wordService.appendMoreWords(50);
       setDisplayText(displayText() + " " + additionalText);
       setNextGenerationPoint(displayText().length * 0.75);
@@ -486,7 +423,6 @@ const TypeRacer: Component = () => {
   createEffect(() => {
     if (textContainerRef) {
       const observer = new ResizeObserver(() => {
-        // Reset line height cache and recalculate
         lineHeight = 0;
         updateScrollPosition();
       });
@@ -499,7 +435,6 @@ const TypeRacer: Component = () => {
     }
   });
 
-  // Reset component state (local to this component)
   const resetComponentState = () => {
     // Reset local state
     setCurrentInput("");
@@ -524,7 +459,6 @@ const TypeRacer: Component = () => {
 
   // Effect to update display text when typing text changes
   createEffect(() => {
-    // Get the text from context
     const text = typingText();
 
     if (initialSettings().mode === "time") {
@@ -536,10 +470,8 @@ const TypeRacer: Component = () => {
       setDisplayText(words.join(" "));
     }
 
-    // Set the next generation point for infinite text
     setNextGenerationPoint(text.length * 0.75);
 
-    // Reset component state
     resetComponentState();
   });
 
@@ -553,7 +485,7 @@ const TypeRacer: Component = () => {
       // Calculate visual cursor position, adjusting for scroll
       let cursorTop = rect.top - containerRect.top;
 
-      // Determine which visual line the cursor is on (0-based)
+      // Determine which visual line the cursor is on
       const lineHeight = getLineHeight();
       const visualLine = Math.floor(cursorTop / lineHeight);
 
@@ -565,11 +497,9 @@ const TypeRacer: Component = () => {
 
       // If we're not on the last line of text, keep cursor on second visible line
       if (visualLine >= 2 && !isLastLine) {
-        // Adjust cursor to appear on the second line
-        cursorTop = lineHeight * 1; // second line (0-indexed, so line 1)
+        cursorTop = lineHeight * 1;
       }
 
-      // Update cursor position
       setCursorPosition({
         left: rect.left - containerRect.left,
         top: cursorTop,
@@ -578,12 +508,10 @@ const TypeRacer: Component = () => {
   };
 
   createEffect(() => {
-    // Cancel any existing animation frame
     if (cursorUpdateRaf) {
       cancelAnimationFrame(cursorUpdateRaf);
     }
 
-    // Use requestAnimationFrame for smoother cursor updates
     cursorUpdateRaf = requestAnimationFrame(() => {
       updateCursorPosition();
     });
@@ -653,7 +581,6 @@ const TypeRacer: Component = () => {
 
     const newMetrics = { wpm, rawWpm, cpm, accuracy, score };
 
-    // Send metrics update to context
     updateMetrics(newMetrics);
   };
 
@@ -670,33 +597,6 @@ const TypeRacer: Component = () => {
     }
 
     return index === displayText().length || displayText()[index] === " ";
-  };
-
-  // Legacy key handler - keep for fallback keyboard access
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (isTestComplete()) {
-      e.preventDefault();
-      return;
-    }
-
-    setIsTyping(true);
-    clearTimeout(typingTimer);
-
-    typingTimer = setTimeout(() => {
-      setIsTyping(false);
-    }, 750);
-
-    if (e.key === "Backspace") {
-      if (currentIndex() === 0) {
-        e.preventDefault();
-        return;
-      }
-
-      if (isWordComplete(currentIndex() - 1)) {
-        e.preventDefault();
-        return;
-      }
-    }
   };
 
   const getCharClass = (index: number) => {
@@ -752,55 +652,43 @@ const TypeRacer: Component = () => {
     }
   });
 
-  // Legacy input handler - keep for fallback
-  const handleInput = (e: Event) => {
-    if (isTestComplete()) return;
+  // Helper function to check if we've completed a line of text
+  const checkForLineCompletion = (index: number) => {
+    if (!textDisplayRef) return false;
 
-    const input = (e.target as HTMLInputElement).value;
-    setCurrentInput(input);
-    setCurrentIndex(input.length);
+    const char = displayText()[index];
+    if (!char) return false;
 
-    // Temporarily disable cursor animation during rapid typing
-    setShouldAnimate(false);
+    if (char === " " || char === "\n") {
+      const { lineStarts } = calculateLinePositions();
 
-    // Update scroll position as user types
-    updateScrollPosition();
-
-    // Check if we need to generate more text for timed mode
-    appendMoreTextIfNeeded();
-
-    if (startTime() === null) {
-      setStartTime(Date.now());
-      if (initialSettings().mode === "time" && initialSettings().timeSeconds) {
-        setRemainingTime(initialSettings().timeSeconds);
-        startCountdown();
+      let currentLineIdx = -1;
+      for (let i = 0; i < lineStarts.length; i++) {
+        if (lineStarts[i] > index) {
+          currentLineIdx = i - 1;
+          break;
+        }
       }
+
+      if (currentLineIdx === -1) {
+        currentLineIdx = 0;
+      }
+
+      const nextLineStart =
+        lineStarts[currentLineIdx + 1] || displayText().length;
+      const nextSpaceIdx = displayText().indexOf(" ", index + 1);
+
+      return nextSpaceIdx === -1 || nextSpaceIdx >= nextLineStart;
     }
 
-    setIsTyping(true);
-    clearTimeout(typingTimer);
-
-    typingTimer = setTimeout(() => {
-      setIsTyping(false);
-      setShouldAnimate(true);
-    }, 750);
-
-    calculateMetrics();
-
-    // Check if test is completed in word count mode
-    if (
-      initialSettings().mode === "words" &&
-      currentIndex() >= displayText().length
-    ) {
-      completeTest();
-    }
+    return false;
   };
 
   onMount(() => {
     if (inputRef) {
       inputRef.focus();
       // Disable standard input handling - only use analog data
-      inputRef.disabled = false; // We need the element to be enabled to receive focus
+      inputRef.disabled = false;
     }
 
     // Keep focus on the input element at all times
@@ -947,20 +835,14 @@ const TypeRacer: Component = () => {
               class="absolute opacity-0 focus:outline-none"
               value={currentInput()}
               disabled={false}
-              onFocus={() => {
-                /* Keep focus */
-              }}
               onClick={(e) => e.stopPropagation()}
               onKeyDown={(e) => {
-                // Prevent default key behavior but process the event to ensure keyboard events are registered
+                // Prevent default key behavior
                 e.preventDefault();
-                handleKeyDown(e);
               }}
               onInput={(e) => {
                 // Prevent default input behavior
                 e.preventDefault();
-                // Do not process standard input - it's handled by the analog system
-                // But keep this handler to make sure input events are properly registered
               }}
             />
           </div>

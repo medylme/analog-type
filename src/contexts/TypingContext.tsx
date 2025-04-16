@@ -8,6 +8,7 @@ import {
 } from "solid-js";
 
 import wordService from "@/services/WordService";
+import challengeService from "@/services/ChallengeService";
 import { TypingMetrics } from "@/types/components/MetricsTypes";
 import {
   RunningSettings,
@@ -17,7 +18,7 @@ import {
 interface TypingContextType {
   // Settings
   initialSettings: () => InitialSettings;
-  updateTestSettings: (newSettings: InitialSettings) => void;
+  updateInitialSettings: (newSettings: InitialSettings) => void;
 
   // Display settings
   runningSettings: () => RunningSettings;
@@ -40,6 +41,9 @@ interface TypingContextType {
   setRemainingTime: (time: number | null) => void;
   setStartTime: (time: number | null) => void;
 
+  // Challenge mode
+  randomizeBracket: () => void;
+
   // Methods
   resetTest: () => void;
   completeTest: () => void;
@@ -51,14 +55,16 @@ const TypingContext = createContext<TypingContextType>({} as TypingContextType);
 
 export function TypingProvider(props: { children: JSX.Element }) {
   // Resets the test when modified
-  const [initialSettings, setTestSettings] = createSignal<InitialSettings>({
+  const [initialSettings, setInitialSettings] = createSignal<InitialSettings>({
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
     targetBracket: { enabled: false, min: 0.2, max: 0.8 },
+    challengeType: "static",
+    difficultyLevel: "normal",
   });
   // Doesn't reset the test when modified
-  const [runningSettings, setDisplaySettings] = createSignal<RunningSettings>({
+  const [runningSettings, setRunningSettings] = createSignal<RunningSettings>({
     targetBracket: {
       min: initialSettings().targetBracket?.min ?? 0.2,
       max: initialSettings().targetBracket?.max ?? 0.8,
@@ -81,6 +87,45 @@ export function TypingProvider(props: { children: JSX.Element }) {
   const [startTime, setStartTime] = createSignal<number | null>(null);
   const [remainingTime, setRemainingTime] = createSignal<number | null>(null);
   let countdownTimer: NodeJS.Timeout;
+
+  // Randomize bracket settings based on challenge settings
+  const randomizeBracket = () => {
+    const settings = initialSettings();
+
+    // Only apply randomization if in challenge mode
+    if (settings.challengeType !== "challenge") return;
+
+    const isAgonyMode = settings.targetBracket?.enabled || false;
+    const currentMin = settings.targetBracket?.min || 0.2;
+    const currentMax = settings.targetBracket?.max || 0.8;
+    const difficulty = settings.difficultyLevel || "normal";
+
+    const newBracket = challengeService.randomizeBracket(
+      isAgonyMode,
+      difficulty,
+      currentMin,
+      currentMax
+    );
+
+    if (!isTestActive()) {
+      setInitialSettings({
+        ...initialSettings(),
+        targetBracket: {
+          ...initialSettings().targetBracket,
+          min: newBracket.min,
+          max: newBracket.max,
+        },
+      });
+    }
+
+    setRunningSettings({
+      ...runningSettings(),
+      targetBracket: {
+        min: newBracket.min,
+        max: newBracket.max,
+      },
+    });
+  };
 
   // Start countdown timer
   const startCountdown = () => {
@@ -121,7 +166,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
       );
     }
 
-    setTestSettings(newSettings);
+    setInitialSettings(newSettings);
     resetTest();
   };
 
@@ -145,6 +190,15 @@ export function TypingProvider(props: { children: JSX.Element }) {
       accuracy: 0,
     });
 
+    // Reset running settings
+    setRunningSettings({
+      ...runningSettings(),
+      targetBracket: {
+        min: initialSettings().targetBracket?.min ?? 0.2,
+        max: initialSettings().targetBracket?.max ?? 0.8,
+      },
+    });
+
     // Generate new text based on current settings
     const currentSettings = initialSettings();
     if (currentSettings.mode === "time") {
@@ -158,7 +212,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
   // Update display settings
   const updateRunningSettings = (newDisplaySettings: RunningSettings) => {
-    setDisplaySettings(newDisplaySettings);
+    setRunningSettings(newDisplaySettings);
   };
 
   // Update metrics
@@ -186,7 +240,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
   const contextValue: TypingContextType = {
     // State getters
-    initialSettings: initialSettings,
+    initialSettings,
     runningSettings,
     typingText,
     isTestActive,
@@ -196,11 +250,14 @@ export function TypingProvider(props: { children: JSX.Element }) {
     startTime,
 
     // State setters
-    updateTestSettings: updateInitialSettings,
+    updateInitialSettings,
     updateRunningSettings,
     updateMetrics,
     setRemainingTime,
     setStartTime,
+
+    // Challenge methods
+    randomizeBracket,
 
     // Methods
     resetTest,
