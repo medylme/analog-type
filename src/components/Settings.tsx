@@ -115,7 +115,7 @@ const Settings: Component = () => {
   };
 
   return (
-    <div class="mb-6 flex flex-col gap-4 rounded-lg bg-stone-800 p-6 text-white">
+    <div class="mb-6 flex flex-col gap-4 rounded-xl bg-stone-800 p-6 text-white">
       <div class="flex flex-row items-start gap-24">
         {/* Mode Selection */}
         <div>

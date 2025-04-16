@@ -246,7 +246,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
     >
       <Show when={isTestActive()}>
         <div class="flex flex-col items-center p-6">
-          <div class="relative mx-auto mb-4 h-[300px] w-[750px] max-w-5xl rounded-lg p-4 will-change-transform">
+          <div class="relative mx-auto mb-4 h-[300px] w-[750px] max-w-5xl rounded-xl p-4 will-change-transform">
             {/* Render each key as a separate component for better performance */}
             {keyboardLayout.map((key) => (
               <KeyComponent key={key} />

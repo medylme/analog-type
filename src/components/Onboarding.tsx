@@ -45,7 +45,7 @@ const Onboarding: Component = () => {
     <Show when={isOpen()}>
       <Portal>
         <div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm select-none">
-          <div class="mx-4 w-full max-w-2xl rounded-lg bg-stone-800 p-8 shadow-xl">
+          <div class="mx-4 w-full max-w-2xl rounded-xl bg-stone-800 p-8 shadow-xl">
             <h2 class="mb-4 text-2xl font-bold text-white">
               Welcome to Analog-type!
             </h2>
@@ -55,7 +55,7 @@ const Onboarding: Component = () => {
             </p>
 
             <button
-              class="flex cursor-pointer flex-row items-center rounded-lg bg-stone-700 p-6 transition-colors hover:bg-stone-600"
+              class="flex cursor-pointer flex-row items-center rounded-xl bg-stone-700 p-6 transition-colors hover:bg-stone-600"
               onClick={setBracketSettings}
             >
               <div class="flex w-1/2 flex-col text-left">
@@ -74,7 +74,7 @@ const Onboarding: Component = () => {
 
             <div class="mt-6 text-center">
               <button
-                class="h-12 w-full cursor-pointer rounded-lg bg-stone-700 text-sm text-stone-300 transition-colors hover:bg-stone-600 hover:text-white"
+                class="h-12 w-full cursor-pointer rounded-xl bg-stone-700 text-sm text-stone-300 transition-colors hover:bg-stone-600 hover:text-white"
                 onClick={setNormalSettings}
               >
                 That sounds terrible, just give me a normal typing test

@@ -67,7 +67,7 @@ const Metrics: Component = () => {
         appear={true}
       >
         {isVisible() && (
-          <div class="mt-4 rounded-lg bg-stone-800 p-4 text-white">
+          <div class="mt-4 rounded-xl bg-stone-800 p-4 text-white">
             {/* Score Component */}
             <div class="mb-4 text-center">
               <span class="text-xl font-bold">Score: {metrics().score}</span>

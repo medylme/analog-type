@@ -63,7 +63,7 @@ export default function IndexPage() {
               {(isTestActive() || isTestComplete()) && (
                 <div class="mt-6 text-center">
                   <button
-                    class="bg-blurple rounded-lg px-6 py-2 font-bold text-white hover:bg-blue-600"
+                    class="bg-blurple rounded-xl px-6 py-2 font-bold text-white hover:bg-blue-600"
                     onClick={resetTest}
                   >
                     {isTestComplete() ? "New Test" : "Reset"}
