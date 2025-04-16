@@ -14,7 +14,6 @@ import {
   TestSettings,
 } from "@/types/context/TypingContextTypes";
 
-// Define the context type
 interface TypingContextType {
   // Settings
   settings: () => TestSettings;
@@ -48,17 +47,16 @@ interface TypingContextType {
   clearCountdown: () => void;
 }
 
-// Create the context with default values
 const TypingContext = createContext<TypingContextType>({} as TypingContextType);
 
-// Provider component
 export function TypingProvider(props: { children: JSX.Element }) {
   const [settings, setSettings] = createSignal<TestSettings>({
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
-    targetBracket: { enabled: true, min: 0.2, max: 0.8 },
+    targetBracket: { enabled: false, min: 0.2, max: 0.8 },
   });
+  // Buffer state for targetBracket
   const [displaySettings, setDisplaySettings] = createSignal<DisplaySettings>({
     targetBracket: {
       min: settings().targetBracket?.min ?? 0.2,
@@ -76,6 +74,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
   let countdownTimer: NodeJS.Timeout;
 
   const [metrics, setMetrics] = createSignal<TypingMetrics>({
+    score: 0,
     wpm: 0,
     rawWpm: 0,
     cpm: 0,
@@ -122,7 +121,6 @@ export function TypingProvider(props: { children: JSX.Element }) {
     }
 
     setSettings(newSettings);
-    resetTest();
   };
 
   // Reset test
@@ -138,6 +136,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
     // Reset metrics
     setMetrics({
+      score: 0,
       wpm: 0,
       rawWpm: 0,
       cpm: 0,

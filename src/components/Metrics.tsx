@@ -69,6 +69,11 @@ const Metrics: Component = () => {
       >
         {isVisible() && (
           <div class="mt-4 rounded-lg bg-stone-800 p-4 text-white">
+            {/* Score Component */}
+            <div class="mb-4 text-center">
+              <span class="text-xl font-bold">Score: {metrics().score}</span>
+            </div>
+
             {/* Timer Component */}
             {getTimerText() && (
               <div class="mb-4 text-center">

@@ -600,7 +600,38 @@ const TypeRacer: Component = () => {
         ? Math.round((correctChars / currentIndex()) * 100)
         : 0;
 
-    const newMetrics = { wpm, rawWpm, cpm, accuracy };
+    // Calculate score: count of correctly typed words
+    let score = 0;
+    let wordStart = 0;
+
+    // Iterate through the text word by word
+    for (let i = 0; i <= currentIndex(); i++) {
+      // Check if we've reached the end of a word or the end of the text
+      if (
+        i === currentIndex() ||
+        displayText()[i] === " " ||
+        displayText()[i] === "\n"
+      ) {
+        // Check if the current word is typed correctly
+        let isWordCorrect = true;
+        for (let j = wordStart; j < i; j++) {
+          if (currentInput()[j] !== displayText()[j]) {
+            isWordCorrect = false;
+            break;
+          }
+        }
+
+        // Increment score if the word was typed correctly
+        if (isWordCorrect && i > wordStart) {
+          score++;
+        }
+
+        // Update word start position for the next word
+        wordStart = i + 1;
+      }
+    }
+
+    const newMetrics = { wpm, rawWpm, cpm, accuracy, score };
 
     // Send metrics update to context
     updateMetrics(newMetrics);
