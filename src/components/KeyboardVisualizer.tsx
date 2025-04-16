@@ -118,7 +118,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
                       {/* Target bracket area */}
                       <div
-                        class="bg-blurple/40 absolute top-0 w-full overflow-hidden rounded-full transition-all duration-100 ease-in-out"
+                        class="bg-blurple/40 absolute top-0 w-full overflow-hidden transition-all duration-100 ease-in-out"
                         style={{
                           top: `${targetBracket.min * 100}%`,
                           height: `${

@@ -11,6 +11,7 @@ import Settings from "@/components/Settings";
 import TextParagraph from "@/components/TextParagraph";
 import Metrics from "@/components/Metrics";
 import KeyboardVisualizer from "@/components/KeyboardVisualizer";
+import Onboarding from "@/components/Onboarding";
 
 export default function IndexPage() {
   const { isTestActive, isTestComplete, resetTest } = useTyping();
@@ -21,6 +22,7 @@ export default function IndexPage() {
     <div class="font-display min-h-screen bg-stone-900 py-8 select-none">
       <Show when={isConnected()}>
         <Header />
+        <Onboarding />
       </Show>
 
       <Show when={isConnected()} fallback={<LandingPage />}>

@@ -202,7 +202,7 @@ const Settings: Component = () => {
           <Tooltip
             position="bottom"
             width="200px"
-            content="Shows a keyboard visualizer of your inputs. This might come with a small performance hit."
+            content="Shows a keyboard visualizer of your inputs. You can try turning this off if you're experiencing performance issues or find it distracting."
           >
             ?
           </Tooltip>
@@ -229,8 +229,8 @@ const Settings: Component = () => {
                 <>
                   <b>Point:</b> Normal typing.
                   <br /> <br />
-                  <b>Bracket:</b> Keep your inputs within the range. Press too
-                  far and it doesn't count!
+                  <b>Bracket:</b> Maintain your typing force within a target
+                  range. Go too far and it doesn't count!
                 </>
               }
             >
