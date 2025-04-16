@@ -363,8 +363,8 @@ const Settings: Component = () => {
                   />
 
                   {/* Actuation point value indicator */}
-                  <div class="flex justify-center text-xs text-stone-300">
-                    <span>Actuation: {displayMin().toFixed(2)}</span>
+                  <div class="flex -translate-y-2 justify-center text-xs text-stone-300">
+                    <span>Actuation Point: {displayMin().toFixed(2)}</span>
                   </div>
                 </>
               )}
