@@ -63,8 +63,8 @@ const Onboarding: Component = () => {
                   Bracket Mode
                 </h3>
                 <p class="text-sm text-stone-300">
-                  Maintain your typing force within a target range. Go too far
-                  and it doesn't count!
+                  Master the art of typing at night by maintaining your typing
+                  force within a target range. Go too far and it doesn't count!
                 </p>
               </div>
               <div class="flex w-1/2 flex-col items-end pr-16">
