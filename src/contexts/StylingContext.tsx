@@ -14,7 +14,7 @@ const StylingContext = createContext<StylingContextType>(
 
 export function StylingProvider(props: { children: JSX.Element }) {
   const [showKeyboardVisualizer, setShowKeyboardVisualizer] =
-    createSignal(false);
+    createSignal(true);
 
   const contextValue: StylingContextType = {
     showKeyboardVisualizer,
