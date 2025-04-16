@@ -9,7 +9,7 @@ const Metrics: Component = () => {
     metrics,
     isTestActive,
     isTestComplete,
-    settings,
+    initialSettings,
     remainingTime,
     startTime,
   } = useTyping();
@@ -19,7 +19,7 @@ const Metrics: Component = () => {
   // Update elapsed time every second when in words mode and test is active
   createEffect(() => {
     if (
-      settings().mode === "words" &&
+      initialSettings().mode === "words" &&
       startTime() !== null &&
       isTestActive() &&
       !isTestComplete()
@@ -47,9 +47,9 @@ const Metrics: Component = () => {
   };
 
   const getTimerText = () => {
-    if (settings().mode === "time" && remainingTime() !== null) {
+    if (initialSettings().mode === "time" && remainingTime() !== null) {
       return `Time: ${formatTime(remainingTime())}`;
-    } else if (settings().mode === "words" && startTime() !== null) {
+    } else if (initialSettings().mode === "words" && startTime() !== null) {
       return `Time Elapsed: ${formatTime(elapsedTime())}`;
     }
     return "";

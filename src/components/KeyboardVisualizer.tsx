@@ -10,7 +10,7 @@ interface KeyboardVisualizerProps {
 }
 
 const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
-  const { isTestActive, isTestComplete, settings, displaySettings } =
+  const { isTestActive, isTestComplete, initialSettings, runningSettings } =
     useTyping();
   const { pressedKeys, keyboardLayout, getMostPressedKey } = useKeyboard();
 
@@ -25,15 +25,15 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
             // Get the target bracket from either props (if provided) or settings
             const targetBracket = {
-              ...settings().targetBracket,
+              ...initialSettings().targetBracket,
               min:
-                displaySettings().targetBracket?.min !== undefined
-                  ? displaySettings().targetBracket?.min
-                  : settings().targetBracket?.min || 0,
+                runningSettings().targetBracket?.min !== undefined
+                  ? runningSettings().targetBracket?.min
+                  : initialSettings().targetBracket?.min || 0,
               max:
-                displaySettings().targetBracket?.max !== undefined
-                  ? displaySettings().targetBracket?.max
-                  : settings().targetBracket?.max || 1,
+                runningSettings().targetBracket?.max !== undefined
+                  ? runningSettings().targetBracket?.max
+                  : initialSettings().targetBracket?.max || 1,
             };
 
             return (

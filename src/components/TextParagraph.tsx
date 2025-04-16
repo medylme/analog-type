@@ -20,7 +20,7 @@ type KeyActuationState = {
 
 const TypeRacer: Component = () => {
   const {
-    settings,
+    initialSettings,
     typingText,
     isTestComplete,
     updateMetrics,
@@ -68,7 +68,7 @@ const TypeRacer: Component = () => {
     if (!isWindowFocused()) return;
 
     const currentKeys = pressedKeys();
-    const targetBracket = settings().targetBracket;
+    const targetBracket = initialSettings().targetBracket;
 
     if (!targetBracket || currentKeys.length === 0) return;
 
@@ -231,8 +231,8 @@ const TypeRacer: Component = () => {
 
       if (startTime() === null) {
         setStartTime(Date.now());
-        if (settings().mode === "time" && settings().timeSeconds) {
-          setRemainingTime(settings().timeSeconds);
+        if (initialSettings().mode === "time" && initialSettings().timeSeconds) {
+          setRemainingTime(initialSettings().timeSeconds);
           startCountdown();
         }
       }
@@ -252,7 +252,10 @@ const TypeRacer: Component = () => {
     }, 750);
 
     // Check if test is completed in word count mode
-    if (settings().mode === "words" && currentIndex() >= displayText().length) {
+    if (
+      initialSettings().mode === "words" &&
+      currentIndex() >= displayText().length
+    ) {
       completeTest();
     }
   };
@@ -454,7 +457,10 @@ const TypeRacer: Component = () => {
 
   const appendMoreTextIfNeeded = () => {
     // Only append more text for timed mode
-    if (settings().mode === "time" && currentIndex() > nextGenerationPoint()) {
+    if (
+      initialSettings().mode === "time" &&
+      currentIndex() > nextGenerationPoint()
+    ) {
       // Generate more text and append it
       const additionalText = wordService.appendMoreWords(50);
       setDisplayText(displayText() + " " + additionalText);
@@ -507,11 +513,11 @@ const TypeRacer: Component = () => {
     // Get the text from context
     const text = typingText();
 
-    if (settings().mode === "time") {
+    if (initialSettings().mode === "time") {
       setDisplayText(text);
     } else {
       // For word count mode, only display exactly the number of words needed
-      const wordCount = settings().wordCount || 25;
+      const wordCount = initialSettings().wordCount || 25;
       const words = text.split(" ").slice(0, wordCount);
       setDisplayText(words.join(" "));
     }
@@ -725,7 +731,7 @@ const TypeRacer: Component = () => {
 
   createEffect(() => {
     if (
-      settings().mode === "words" &&
+      initialSettings().mode === "words" &&
       currentIndex() === displayText().length
     ) {
       completeTest();
@@ -751,8 +757,8 @@ const TypeRacer: Component = () => {
 
     if (startTime() === null) {
       setStartTime(Date.now());
-      if (settings().mode === "time" && settings().timeSeconds) {
-        setRemainingTime(settings().timeSeconds);
+      if (initialSettings().mode === "time" && initialSettings().timeSeconds) {
+        setRemainingTime(initialSettings().timeSeconds);
         startCountdown();
       }
     }
@@ -768,7 +774,10 @@ const TypeRacer: Component = () => {
     calculateMetrics();
 
     // Check if test is completed in word count mode
-    if (settings().mode === "words" && currentIndex() >= displayText().length) {
+    if (
+      initialSettings().mode === "words" &&
+      currentIndex() >= displayText().length
+    ) {
       completeTest();
     }
   };

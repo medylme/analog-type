@@ -13,29 +13,33 @@ import {
 const Settings: Component = () => {
   const timeOptions: TimeOption[] = [15, 30, 60, 120];
   const wordCountOptions: WordCountOption[] = [10, 25, 50, 100];
-  const { settings, updateSettings, displaySettings, updateDisplaySettings } =
-    useTyping();
+  const {
+    initialSettings,
+    updateTestSettings,
+    runningSettings,
+    updateRunningSettings,
+  } = useTyping();
   const { showKeyboardVisualizer, setShowKeyboardVisualizer } = useStyling();
 
   // Local state for displaying values during dragging
   const [displayMin, setDisplayMin] = createSignal(
-    settings().targetBracket?.min || 0
+    initialSettings().targetBracket?.min || 0
   );
   const [displayMax, setDisplayMax] = createSignal(
-    settings().targetBracket?.max || 1
+    initialSettings().targetBracket?.max || 1
   );
 
   const handleMinChange = (newMin: number) => {
     // For display only during dragging
-    const currentMax = settings().targetBracket?.max || 1;
+    const currentMax = initialSettings().targetBracket?.max || 1;
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
     setDisplayMin(newMin);
     // Update the app-level signal
-    updateDisplaySettings({
-      ...displaySettings(),
+    updateRunningSettings({
+      ...runningSettings(),
       targetBracket: {
-        ...displaySettings().targetBracket,
+        ...runningSettings().targetBracket,
         min: newMin,
       },
     });
@@ -43,15 +47,15 @@ const Settings: Component = () => {
 
   const handleMaxChange = (newMax: number) => {
     // For display only during dragging
-    const currentMin = settings().targetBracket?.min || 0;
+    const currentMin = initialSettings().targetBracket?.min || 0;
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
     setDisplayMax(newMax);
     // Update the app-level signal
-    updateDisplaySettings({
-      ...displaySettings(),
+    updateRunningSettings({
+      ...runningSettings(),
       targetBracket: {
-        ...displaySettings().targetBracket,
+        ...runningSettings().targetBracket,
         max: newMax,
       },
     });
@@ -59,24 +63,24 @@ const Settings: Component = () => {
 
   const handleMinDragEnd = (newMin: number) => {
     // Update actual settings when drag ends
-    const currentMax = settings().targetBracket?.max || 1;
+    const currentMax = initialSettings().targetBracket?.max || 1;
     const minDistance = 0.1;
     newMin = Math.max(0.01, Math.min(newMin, currentMax - minDistance));
 
-    updateSettings({
-      ...settings(),
+    updateTestSettings({
+      ...initialSettings(),
       targetBracket: {
-        enabled: settings().targetBracket?.enabled || false,
+        enabled: initialSettings().targetBracket?.enabled || false,
         min: newMin,
         max: currentMax,
       },
     });
 
     // Reset the app-level signals when drag ends
-    updateDisplaySettings({
-      ...displaySettings(),
+    updateRunningSettings({
+      ...runningSettings(),
       targetBracket: {
-        ...displaySettings().targetBracket,
+        ...runningSettings().targetBracket,
         min: undefined,
         max: undefined,
       },
@@ -85,24 +89,24 @@ const Settings: Component = () => {
 
   const handleMaxDragEnd = (newMax: number) => {
     // Update actual settings when drag ends
-    const currentMin = settings().targetBracket?.min || 0;
+    const currentMin = initialSettings().targetBracket?.min || 0;
     const minDistance = 0.1;
     newMax = Math.max(newMax, currentMin + minDistance);
 
-    updateSettings({
-      ...settings(),
+    updateTestSettings({
+      ...initialSettings(),
       targetBracket: {
-        enabled: settings().targetBracket?.enabled || false,
+        enabled: initialSettings().targetBracket?.enabled || false,
         min: currentMin,
         max: newMax,
       },
     });
 
     // Reset the app-level signals when drag ends
-    updateDisplaySettings({
-      ...displaySettings(),
+    updateRunningSettings({
+      ...runningSettings(),
       targetBracket: {
-        ...displaySettings().targetBracket,
+        ...runningSettings().targetBracket,
         min: undefined,
         max: undefined,
       },
@@ -110,11 +114,11 @@ const Settings: Component = () => {
   };
 
   // Keep local display values in sync with settings
-  if (displayMin() !== settings().targetBracket?.min) {
-    setDisplayMin(settings().targetBracket?.min || 0);
+  if (displayMin() !== initialSettings().targetBracket?.min) {
+    setDisplayMin(initialSettings().targetBracket?.min || 0);
   }
-  if (displayMax() !== settings().targetBracket?.max) {
-    setDisplayMax(settings().targetBracket?.max || 1);
+  if (displayMax() !== initialSettings().targetBracket?.max) {
+    setDisplayMax(initialSettings().targetBracket?.max || 1);
   }
 
   return (
@@ -125,24 +129,24 @@ const Settings: Component = () => {
           <h3 class="mb-2 text-lg font-medium">Test Mode</h3>
           <div class="flex gap-2">
             <Button
-              selected={settings().mode === "time"}
+              selected={initialSettings().mode === "time"}
               onClick={() =>
-                updateSettings({
-                  ...settings(),
+                updateTestSettings({
+                  ...initialSettings(),
                   mode: "time",
-                  timeSeconds: settings().timeSeconds || 30,
+                  timeSeconds: initialSettings().timeSeconds || 30,
                 })
               }
             >
               Time
             </Button>
             <Button
-              selected={settings().mode === "words"}
+              selected={initialSettings().mode === "words"}
               onClick={() =>
-                updateSettings({
-                  ...settings(),
+                updateTestSettings({
+                  ...initialSettings(),
                   mode: "words",
-                  wordCount: settings().wordCount || 25,
+                  wordCount: initialSettings().wordCount || 25,
                 })
               }
             >
@@ -154,20 +158,20 @@ const Settings: Component = () => {
         {/* Time Selection */}
         <div
           class="flex-1 data-[visible=false]:hidden"
-          data-visible={settings().mode === "time"}
+          data-visible={initialSettings().mode === "time"}
         >
           <h3 class="mb-2 text-lg font-medium">Time (seconds)</h3>
           <div class="flex flex-wrap gap-2">
             {timeOptions.map((time) => (
               <Button
-                selected={settings().timeSeconds === time}
+                selected={initialSettings().timeSeconds === time}
                 onClick={() =>
-                  updateSettings({
-                    ...settings(),
+                  updateTestSettings({
+                    ...initialSettings(),
                     timeSeconds: time,
                   })
                 }
-                disabled={settings().mode !== "time"}
+                disabled={initialSettings().mode !== "time"}
               >
                 {time}
               </Button>
@@ -178,20 +182,20 @@ const Settings: Component = () => {
         {/* Word Count Selection */}
         <div
           class="flex-1 data-[visible=false]:hidden"
-          data-visible={settings().mode === "words"}
+          data-visible={initialSettings().mode === "words"}
         >
           <h3 class="mb-2 text-lg font-medium">Word Count</h3>
           <div class="flex flex-wrap gap-2">
             {wordCountOptions.map((count) => (
               <Button
-                selected={settings().wordCount === count}
+                selected={initialSettings().wordCount === count}
                 onClick={() =>
-                  updateSettings({
-                    ...settings(),
+                  updateTestSettings({
+                    ...initialSettings(),
                     wordCount: count,
                   })
                 }
-                disabled={settings().mode !== "words"}
+                disabled={initialSettings().mode !== "words"}
               >
                 {count}
               </Button>
@@ -221,10 +225,10 @@ const Settings: Component = () => {
             </div>
             <div class="flex flex-row gap-2">
               <Button
-                selected={!settings().targetBracket?.enabled}
+                selected={!initialSettings().targetBracket?.enabled}
                 onClick={() => {
-                  updateSettings({
-                    ...settings(),
+                  updateTestSettings({
+                    ...initialSettings(),
                     targetBracket: {
                       enabled: false,
                       min: 0.4,
@@ -236,10 +240,10 @@ const Settings: Component = () => {
                 Normal
               </Button>
               <Button
-                selected={settings().targetBracket?.enabled}
+                selected={initialSettings().targetBracket?.enabled}
                 onClick={() => {
-                  updateSettings({
-                    ...settings(),
+                  updateTestSettings({
+                    ...initialSettings(),
                     targetBracket: {
                       enabled: true,
                       min: 0.2,
@@ -259,7 +263,7 @@ const Settings: Component = () => {
                 class="peer sr-only"
                 checked={settings().targetBracket?.enabled || false}
                 onChange={(e) => {
-                  updateSettings({
+                  updateInitialSettings({
                     ...settings(),
                     targetBracket: {
                       enabled: e.target.checked,
@@ -279,7 +283,7 @@ const Settings: Component = () => {
               {/* Slider track */}
               <div class="absolute top-3 h-2 w-full rounded-full bg-stone-700"></div>
 
-              {settings().targetBracket?.enabled ? (
+              {initialSettings().targetBracket?.enabled ? (
                 <>
                   {/* Filled area between handles in bracket mode */}
                   <div
@@ -331,10 +335,10 @@ const Settings: Component = () => {
                       newPos = Math.max(0.01, newPos);
                       setDisplayMin(newPos);
                       // Update the app-level signal
-                      updateDisplaySettings({
-                        ...displaySettings(),
+                      updateRunningSettings({
+                        ...runningSettings(),
                         targetBracket: {
-                          ...displaySettings().targetBracket,
+                          ...runningSettings().targetBracket,
                           min: newPos,
                         },
                       });
@@ -342,20 +346,20 @@ const Settings: Component = () => {
                     onDragEnd={(newPos) => {
                       // Enforce minimum of 0.01
                       newPos = Math.max(0.01, newPos);
-                      updateSettings({
-                        ...settings(),
+                      updateTestSettings({
+                        ...initialSettings(),
                         targetBracket: {
                           enabled: false,
                           min: newPos,
-                          max: settings().targetBracket?.max || 0.7,
+                          max: initialSettings().targetBracket?.max || 0.7,
                         },
                       });
 
                       // Reset the app-level signals when drag ends
-                      updateDisplaySettings({
-                        ...displaySettings(),
+                      updateRunningSettings({
+                        ...runningSettings(),
                         targetBracket: {
-                          ...displaySettings().targetBracket,
+                          ...runningSettings().targetBracket,
                           min: undefined,
                         },
                       });

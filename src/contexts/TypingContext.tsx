@@ -10,18 +10,18 @@ import {
 import wordService from "@/services/WordService";
 import { TypingMetrics } from "@/types/components/MetricsTypes";
 import {
-  DisplaySettings,
-  TestSettings,
+  RunningSettings,
+  InitialSettings,
 } from "@/types/context/TypingContextTypes";
 
 interface TypingContextType {
   // Settings
-  settings: () => TestSettings;
-  updateSettings: (newSettings: TestSettings) => void;
+  initialSettings: () => InitialSettings;
+  updateTestSettings: (newSettings: InitialSettings) => void;
 
   // Display settings
-  displaySettings: () => DisplaySettings;
-  updateDisplaySettings: (newDisplaySettings: DisplaySettings) => void;
+  runningSettings: () => RunningSettings;
+  updateRunningSettings: (newDisplaySettings: RunningSettings) => void;
 
   // Text
   typingText: () => string;
@@ -50,18 +50,27 @@ interface TypingContextType {
 const TypingContext = createContext<TypingContextType>({} as TypingContextType);
 
 export function TypingProvider(props: { children: JSX.Element }) {
-  const [settings, setSettings] = createSignal<TestSettings>({
+  // Resets the test when modified
+  const [initialSettings, setTestSettings] = createSignal<InitialSettings>({
     mode: "time",
     timeSeconds: 30,
     wordCount: 25,
     targetBracket: { enabled: false, min: 0.2, max: 0.8 },
   });
-  // Buffer state for targetBracket
-  const [displaySettings, setDisplaySettings] = createSignal<DisplaySettings>({
+  // Doesn't reset the test when modified
+  const [runningSettings, setDisplaySettings] = createSignal<RunningSettings>({
     targetBracket: {
-      min: settings().targetBracket?.min ?? 0.2,
-      max: settings().targetBracket?.max ?? 0.8,
+      min: initialSettings().targetBracket?.min ?? 0.2,
+      max: initialSettings().targetBracket?.max ?? 0.8,
     },
+  });
+  // Metrics
+  const [metrics, setMetrics] = createSignal<TypingMetrics>({
+    score: 0,
+    wpm: 0,
+    rawWpm: 0,
+    cpm: 0,
+    accuracy: 0,
   });
 
   const [typingText, setTypingText] = createSignal("");
@@ -72,14 +81,6 @@ export function TypingProvider(props: { children: JSX.Element }) {
   const [startTime, setStartTime] = createSignal<number | null>(null);
   const [remainingTime, setRemainingTime] = createSignal<number | null>(null);
   let countdownTimer: NodeJS.Timeout;
-
-  const [metrics, setMetrics] = createSignal<TypingMetrics>({
-    score: 0,
-    wpm: 0,
-    rawWpm: 0,
-    cpm: 0,
-    accuracy: 0,
-  });
 
   // Start countdown timer
   const startCountdown = () => {
@@ -111,7 +112,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
   };
 
   // Update settings
-  const updateSettings = (newSettings: TestSettings) => {
+  const updateInitialSettings = (newSettings: InitialSettings) => {
     // Ensure min is at least 0.01
     if (newSettings.targetBracket) {
       newSettings.targetBracket.min = Math.max(
@@ -120,7 +121,8 @@ export function TypingProvider(props: { children: JSX.Element }) {
       );
     }
 
-    setSettings(newSettings);
+    setTestSettings(newSettings);
+    resetTest();
   };
 
   // Reset test
@@ -144,7 +146,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
     });
 
     // Generate new text based on current settings
-    const currentSettings = settings();
+    const currentSettings = initialSettings();
     if (currentSettings.mode === "time") {
       setTypingText(wordService.generateWordSet(1000));
     } else {
@@ -155,7 +157,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
   };
 
   // Update display settings
-  const updateDisplaySettings = (newDisplaySettings: DisplaySettings) => {
+  const updateRunningSettings = (newDisplaySettings: RunningSettings) => {
     setDisplaySettings(newDisplaySettings);
   };
 
@@ -167,7 +169,7 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
   // Generate initial text based on settings
   createEffect(() => {
-    const currentSettings = settings();
+    const currentSettings = initialSettings();
     if (currentSettings.mode === "time") {
       setTypingText(wordService.generateWordSet(1000));
     } else {
@@ -184,8 +186,8 @@ export function TypingProvider(props: { children: JSX.Element }) {
 
   const contextValue: TypingContextType = {
     // State getters
-    settings,
-    displaySettings,
+    initialSettings: initialSettings,
+    runningSettings,
     typingText,
     isTestActive,
     isTestComplete,
@@ -194,8 +196,8 @@ export function TypingProvider(props: { children: JSX.Element }) {
     startTime,
 
     // State setters
-    updateSettings,
-    updateDisplaySettings,
+    updateTestSettings: updateInitialSettings,
+    updateRunningSettings,
     updateMetrics,
     setRemainingTime,
     setStartTime,
