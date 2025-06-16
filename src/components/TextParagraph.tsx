@@ -367,47 +367,33 @@ const TypeRacer: Component = () => {
   };
 
   const updateScrollPosition = () => {
-    if (!textDisplayRef || !textContainerRef) return;
+    if (!textDisplayRef || !textContainerRef || !spanRefs[currentIndex()])
+      return;
 
-    const { lineStarts } = calculateLinePositions();
-    const currentPos = currentIndex();
-    let currentLineIndex = 0;
+    // Use the same visual line calculation as cursor positioning
+    const rect = spanRefs[currentIndex()].getBoundingClientRect();
+    const containerRect = textContainerRef.getBoundingClientRect();
 
-    // Find which line the cursor is currently on
-    for (let i = lineStarts.length - 1; i >= 0; i--) {
-      if (currentPos >= lineStarts[i]) {
-        currentLineIndex = i;
-        break;
-      }
-    }
+    if (!containerRect) return;
 
-    // Check if we're at the end of a word
-    const isAtWordEnd =
-      currentPos > 0 &&
-      (displayText()[currentPos - 1] === " " ||
-        displayText()[currentPos - 1] === "\n");
+    // Calculate visual cursor position, adjusting for current scroll
+    const cursorTop = rect.top - containerRect.top;
+    const lineHeight = getLineHeight();
 
-    if (
-      currentLineIndex > 1 &&
-      isAtWordEnd &&
-      currentPos >= lineStarts[currentLineIndex]
-    ) {
-      const linesToScroll = Math.max(0, currentLineIndex - 1);
+    // Calculate the actual line the cursor is on, accounting for current scroll
+    const actualLine = Math.floor((cursorTop + scrollOffset()) / lineHeight);
 
-      setScrollOffset(linesToScroll * getLineHeight());
+    // We want to keep the cursor on the second visible line (index 1)
+    // So scroll when the cursor would be on line 2 or beyond
+    if (actualLine >= 2) {
+      const newScrollOffset = (actualLine - 1) * lineHeight;
 
-      if (textDisplayRef) {
-        textDisplayRef.style.transform = `translateY(-${scrollOffset()}px)`;
-      }
-    } else if (currentLineIndex === 1 && isAtWordEnd) {
-      const thirdLineStart =
-        lineStarts.length > 2 ? lineStarts[2] : displayText().length;
-
-      if (currentPos >= thirdLineStart) {
-        setScrollOffset(getLineHeight());
+      // Only update scroll if it's different from current
+      if (newScrollOffset !== scrollOffset()) {
+        setScrollOffset(newScrollOffset);
 
         if (textDisplayRef) {
-          textDisplayRef.style.transform = `translateY(-${scrollOffset()}px)`;
+          textDisplayRef.style.transform = `translateY(-${newScrollOffset}px)`;
         }
       }
     }
