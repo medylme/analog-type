@@ -14,7 +14,7 @@ const Header: Component = () => {
 
         <Show when={isConnected()}>
           <div class="flex items-center">
-            <div class="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
+            <div class="bg-primary mr-2 h-2 w-2 rounded-full"></div>
             <span class="mr-4 text-white">
               {device()?.productName || "Connected Device"}
             </span>

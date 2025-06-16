@@ -1,4 +1,4 @@
-import { Component, createSignal, Show } from "solid-js";
+import { Component, createSignal, Show, createEffect } from "solid-js";
 
 import { useTyping } from "@/contexts/TypingContext";
 import { useStyling } from "@/contexts/StylingContext";
@@ -29,7 +29,20 @@ const Settings: Component = () => {
     randomizeBracket,
   } = useTyping();
 
-  const { showKeyboardVisualizer, setShowKeyboardVisualizer } = useStyling();
+  const {
+    showKeyboardVisualizer,
+    setShowKeyboardVisualizer,
+    primaryColor,
+    setPrimaryColor,
+  } = useStyling();
+
+  // Update CSS variable when primary color changes
+  createEffect(() => {
+    document.documentElement.style.setProperty(
+      "--color-primary",
+      primaryColor()
+    );
+  });
 
   const displayMin = () =>
     runningSettings().targetBracket?.min ??
@@ -196,25 +209,40 @@ const Settings: Component = () => {
           </div>
         </div>
 
-        {/* Keyboard Visualizer Toggle */}
-        <div class="flex items-center gap-2">
-          <h3 class="text-sm font-medium">Show Keyboard</h3>
-          <Tooltip
-            position="bottom"
-            width="200px"
-            content="Shows a keyboard visualizer of your inputs. You can try turning this off if you're experiencing performance issues or find it distracting."
-          >
-            ?
-          </Tooltip>
-          <label class="inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              class="peer sr-only"
-              checked={showKeyboardVisualizer()}
-              onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
-            />
-            <div class="peer-checked:bg-blurple relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
-          </label>
+        <div class="flex flex-col gap-2">
+          {/* Color Picker */}
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-medium">Primary Color</h3>
+            <div class="flex items-center gap-2">
+              <input
+                type="color"
+                class="h-8 w-8 cursor-pointer rounded-md border-0 bg-transparent p-0"
+                value={primaryColor()}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+              />
+              <span class="text-sm text-stone-300">{primaryColor()}</span>
+            </div>
+          </div>
+          {/* Keyboard Visualizer Toggle */}
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-medium">Show Keyboard</h3>
+            <Tooltip
+              position="bottom"
+              width="200px"
+              content="Shows a keyboard visualizer of your inputs. You can try turning this off if you're experiencing performance issues or find it distracting."
+            >
+              ?
+            </Tooltip>
+            <label class="inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                class="peer sr-only"
+                checked={showKeyboardVisualizer()}
+                onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
+              />
+              <div class="peer-checked:bg-primary relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+            </label>
+          </div>
         </div>
       </div>
       <div class="flex flex-row items-end gap-24">
@@ -349,7 +377,7 @@ const Settings: Component = () => {
                 <>
                   {/* Filled area between handles in bracket mode */}
                   <div
-                    class="bg-blurple absolute top-3 h-2 rounded-full"
+                    class="bg-primary absolute top-3 h-2 rounded-full"
                     style={{
                       left: `${displayMin() * 100}%`,
                       width: `${(displayMax() - displayMin()) * 100}%`,
@@ -382,7 +410,7 @@ const Settings: Component = () => {
                 <>
                   {/* Filled area for actuation point mode */}
                   <div
-                    class="bg-blurple absolute top-3 h-2 rounded-full"
+                    class="bg-primary absolute top-3 h-2 rounded-full"
                     style={{
                       width: `${displayMin() * 100}%`,
                     }}

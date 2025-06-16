@@ -1,11 +1,19 @@
-import { createContext, createSignal, useContext, JSX } from "solid-js";
+import {
+  createContext,
+  createSignal,
+  useContext,
+  JSX,
+  onMount,
+} from "solid-js";
 
 interface StylingContextType {
   // Keyboard visualizer visibility
   showKeyboardVisualizer: () => boolean;
   setShowKeyboardVisualizer: (show: boolean) => void;
 
-  // Add more styling options here as needed
+  // Primary color
+  primaryColor: () => string;
+  setPrimaryColor: (color: string) => void;
 }
 
 const StylingContext = createContext<StylingContextType>(
@@ -16,9 +24,22 @@ export function StylingProvider(props: { children: JSX.Element }) {
   const [showKeyboardVisualizer, setShowKeyboardVisualizer] =
     createSignal(true);
 
+  // Initialize primary color from localStorage or use default
+  const [primaryColor, setPrimaryColor] = createSignal(
+    localStorage.getItem("primaryColor") || "#969eff"
+  );
+
+  // Save to localStorage whenever primary color changes
+  const handlePrimaryColorChange = (color: string) => {
+    setPrimaryColor(color);
+    localStorage.setItem("primaryColor", color);
+  };
+
   const contextValue: StylingContextType = {
     showKeyboardVisualizer,
     setShowKeyboardVisualizer,
+    primaryColor,
+    setPrimaryColor: handlePrimaryColorChange,
   };
 
   return (

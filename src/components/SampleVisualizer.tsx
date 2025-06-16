@@ -67,7 +67,7 @@ const SampleVisualizer: Component<SampleVisualizerProps> = (props) => {
         {/* Vertical bar - inverted to show key going down */}
         <div class="relative h-26 w-6 rounded-full bg-stone-800">
           <div
-            class="bg-blurple absolute top-0 w-full rounded-full transition-all duration-50 ease-in-out"
+            class="bg-primary absolute top-0 w-full rounded-full transition-all duration-50 ease-in-out"
             style={{ height: `${keyValue() * 100}%` }}
           ></div>
 
@@ -91,7 +91,7 @@ const SampleVisualizer: Component<SampleVisualizerProps> = (props) => {
           >
             <div class="flex items-center rounded-md px-2 py-1">
               <div
-                class="data-[active=true]:border-r-blurple mr-2 h-0 w-0 border-y-[6px] border-r-[12px] border-y-transparent border-r-stone-800 data-[incorrect=true]:border-r-red-500"
+                class="data-[active=true]:border-r-primary mr-2 h-0 w-0 border-y-[6px] border-r-[12px] border-y-transparent border-r-stone-800 data-[incorrect=true]:border-r-red-500"
                 data-active={keyValue() >= min && keyValue() <= max}
                 data-incorrect={keyValue() > max}
               ></div>
@@ -136,7 +136,7 @@ const SampleVisualizer: Component<SampleVisualizerProps> = (props) => {
 
             {/* Target bracket area */}
             <div
-              class="bg-blurple/40 absolute top-0 w-full overflow-hidden  transition-all duration-50 ease-in-out"
+              class="bg-primary/40 absolute top-0 w-full overflow-hidden transition-all duration-50 ease-in-out"
               style={{
                 top: `${min * 100}%`,
                 height: `${(max - min) * 100}%`,

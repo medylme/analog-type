@@ -607,7 +607,7 @@ const TypeRacer: Component = () => {
   const getCharClass = (index: number) => {
     if (index < currentIndex()) {
       return currentInput()[index] === displayText()[index]
-        ? "text-green-500"
+        ? "text-primary"
         : "text-red-500";
     }
     return "text-gray-400";
@@ -801,7 +801,7 @@ const TypeRacer: Component = () => {
                   .map((char, index) => (
                     <span
                       ref={(el) => (spanRefs[index] = el)}
-                      class={`transition-colors duration-100 ${getCharClass(
+                      class={`transition-colors !duration-200 ${getCharClass(
                         index
                       )}`}
                     >
@@ -811,7 +811,7 @@ const TypeRacer: Component = () => {
               </div>
               {!isTestComplete() && isWindowFocused() && (
                 <div
-                  class="bg-blurple absolute w-0.5 transition-all duration-100"
+                  class="bg-primary absolute w-0.5 transition-all duration-100"
                   style={{
                     left: `${cursorPosition().left}px`,
                     top: `${cursorPosition().top}px`,

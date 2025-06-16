@@ -3,7 +3,11 @@
 
 @theme {
   --font-display: "Varela Round", "sans-serif";
-  --color-blurple: #969eff;
+  --color-primary: #969eff;
+}
+
+:root {
+  transition: --color-primary 1s ease-in-out;
 }
 
 @keyframes blink {

@@ -41,9 +41,9 @@ const Metrics: Component = () => {
 
   const getTimerText = () => {
     if (initialSettings().mode === "time" && remainingTime() !== null) {
-      return `Time: ${formatTime(remainingTime())}`;
+      return formatTime(remainingTime());
     } else if (initialSettings().mode === "words" && startTime() !== null) {
-      return `Time Elapsed: ${formatTime(elapsedTime())}`;
+      return formatTime(elapsedTime());
     }
     return "";
   };
@@ -61,24 +61,10 @@ const Metrics: Component = () => {
         appear={true}
       >
         {isVisible() && (
-          <div class="mt-4 rounded-xl bg-stone-800 p-4 text-white">
-            {/* Score Component */}
-            {initialSettings().mode === "time" && (
-              <div class="mb-4 text-center">
-                <span class="text-xl font-bold">Score: {metrics().score}</span>
-              </div>
-            )}
-
-            {/* Timer Component */}
-            {getTimerText() && (
-              <div class="mb-4 text-center">
-                <span class="text-xl font-bold">{getTimerText()}</span>
-              </div>
-            )}
-
+          <div class="mt-4 flex flex-col gap-y-4 rounded-xl bg-stone-800 p-4 text-white">
             <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
               <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-green-400">
+                <span class="text-primary text-3xl font-bold">
                   <Odometer
                     number={metrics().wpm}
                     speed={100}
@@ -91,7 +77,7 @@ const Metrics: Component = () => {
               </div>
 
               <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-blue-400">
+                <span class="text-primary text-3xl font-bold">
                   <Odometer
                     number={metrics().rawWpm}
                     speed={100}
@@ -106,7 +92,7 @@ const Metrics: Component = () => {
               </div>
 
               <div class="flex flex-col items-center">
-                <span class="text-3xl font-bold text-yellow-400">
+                <span class="text-primary text-3xl font-bold">
                   <Odometer
                     number={metrics().cpm}
                     speed={100}
@@ -119,7 +105,7 @@ const Metrics: Component = () => {
               </div>
 
               <div class="flex flex-col items-center">
-                <span class="flex flex-row items-start gap-1 text-3xl font-bold text-purple-400">
+                <span class="text-primary flex flex-row items-start gap-1 text-3xl font-bold">
                   <Odometer
                     number={metrics().accuracy}
                     speed={100}
@@ -127,12 +113,54 @@ const Metrics: Component = () => {
                     width={0.65}
                     separator={false}
                   />
-                  %
+                  <span class="-translate-y-0.5">%</span>
                 </span>
                 <span class="text-xs tracking-wide text-stone-400">
                   Accuracy
                 </span>
               </div>
+            </div>
+          </div>
+        )}
+      </Transition>
+      <Transition
+        name="metrics"
+        enterActiveClass="transition-all duration-700 ease-in-out"
+        enterClass="opacity-0 transform scale-95 translate-y-10"
+        enterToClass="opacity-100 transform scale-100 translate-y-0"
+        exitActiveClass="transition-all duration-700 ease-in-out"
+        exitClass="opacity-100 transform scale-100 translate-y-0"
+        exitToClass="opacity-0 transform scale-95 translate-y-10"
+        appear={true}
+      >
+        {isVisible() && (
+          <div class="mt-4 flex flex-col gap-y-4 rounded-xl bg-stone-800 p-4 text-white">
+            <div class="flex w-full flex-row items-center justify-center gap-16">
+              {initialSettings().mode === "time" && (
+                <div class="flex flex-col items-center">
+                  <span class="text-primary text-3xl font-bold">
+                    <Odometer
+                      number={metrics().score}
+                      speed={100}
+                      size={30}
+                      width={0.65}
+                      separator={false}
+                    />
+                  </span>
+                  <span class="text-xs tracking-wide text-stone-400">
+                    Score
+                  </span>
+                </div>
+              )}
+
+              {getTimerText() && (
+                <div class="flex flex-col items-center">
+                  <span class="text-primary -translate-y-1 text-3xl font-bold">
+                    {getTimerText()}
+                  </span>
+                  <span class="text-xs tracking-wide text-stone-400">Time</span>
+                </div>
+              )}
             </div>
           </div>
         )}
