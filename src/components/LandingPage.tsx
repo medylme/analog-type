@@ -28,7 +28,7 @@ const LandingPage: Component = () => {
 
         <button
           onClick={connectDevice}
-          class="bg-primary hover:bg-primary/75 w-full cursor-pointer rounded-xl px-6 py-3 font-bold text-white transition-colors duration-200"
+          class="bg-primary hover:bg-primary/75 w-full cursor-pointer rounded-xl px-6 py-3 font-bold text-white transition-colors duration-200 ease-in-out hover:transition-colors"
         >
           Connect
         </button>

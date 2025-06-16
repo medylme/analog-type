@@ -811,7 +811,7 @@ const TypeRacer: Component = () => {
               </div>
               {!isTestComplete() && isWindowFocused() && (
                 <div
-                  class="bg-primary absolute w-0.5 transition-all duration-100"
+                  class="bg-primary absolute w-0.5 transition-all duration-100 ease-in-out"
                   style={{
                     left: `${cursorPosition().left}px`,
                     top: `${cursorPosition().top}px`,

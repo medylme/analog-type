@@ -18,8 +18,8 @@ const Button: Component<ButtonProps> = (props) => {
     <button
       class={`rounded-full px-4 py-2 transition-colors duration-200 ${
         local.selected
-          ? "bg-primary text-white"
-          : "hover:bg-primary/50 cursor-pointer bg-stone-700 text-stone-300"
+          ? "bg-primary text-white transition-colors duration-200 ease-in-out"
+          : "hover:bg-primary/50 cursor-pointer bg-stone-700 text-stone-300 duration-200 ease-in-out hover:transition-colors"
       } ${local.class || ""}`}
       {...others}
     >

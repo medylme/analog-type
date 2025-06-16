@@ -240,7 +240,7 @@ const Settings: Component = () => {
                 checked={showKeyboardVisualizer()}
                 onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
               />
-              <div class="peer-checked:bg-primary relative h-5 w-9 rounded-full bg-stone-700 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+              <div class="bg-primary relative h-5 w-9 rounded-full bg-stone-700 duration-200 ease-in-out peer-checked:transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
             </label>
           </div>
         </div>
@@ -377,7 +377,7 @@ const Settings: Component = () => {
                 <>
                   {/* Filled area between handles in bracket mode */}
                   <div
-                    class="bg-primary absolute top-3 h-2 rounded-full"
+                    class="bg-primary absolute top-3 h-2 rounded-full transition-colors duration-200 ease-in-out"
                     style={{
                       left: `${displayMin() * 100}%`,
                       width: `${(displayMax() - displayMin()) * 100}%`,
@@ -410,7 +410,7 @@ const Settings: Component = () => {
                 <>
                   {/* Filled area for actuation point mode */}
                   <div
-                    class="bg-primary absolute top-3 h-2 rounded-full"
+                    class="bg-primary absolute top-3 h-2 rounded-full transition-colors duration-200 ease-in-out"
                     style={{
                       width: `${displayMin() * 100}%`,
                     }}

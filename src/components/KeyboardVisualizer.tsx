@@ -41,7 +41,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
                 {/* Vertical bar - inverted to show key going down */}
                 <div class="relative h-26 w-6 rounded-full bg-stone-800">
                   <div
-                    class="bg-primary absolute top-0 w-full rounded-full transition-all duration-100 ease-in-out"
+                    class="bg-primary absolute top-0 w-full rounded-full transition-all duration-200 ease-in-out"
                     style={{ height: `${keyValue * 100}%` }}
                   ></div>
 
@@ -118,7 +118,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
                       {/* Target bracket area */}
                       <div
-                        class="bg-primary/40 absolute top-0 w-full overflow-hidden transition-all duration-100 ease-in-out"
+                        class="bg-primary/40 absolute top-0 w-full overflow-hidden transition-all duration-200 ease-in-out"
                         style={{
                           top: `${targetBracket.min * 100}%`,
                           height: `${
@@ -146,7 +146,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
 
                       {/* Actuation line across bar */}
                       <div
-                        class="bg-primary/50 absolute h-0.5 w-full transition-all duration-100 ease-in-out"
+                        class="bg-primary/50 absolute h-0.5 w-full transition-all duration-200 ease-in-out"
                         style={{
                           top: `${targetBracket.min * 100}%`,
                         }}
@@ -195,7 +195,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
       >
         {/* Fill container from top to bottom - only update when value changes */}
         <div
-          class="bg-primary absolute top-0 right-0 left-0 z-0"
+          class="bg-primary absolute top-0 right-0 left-0 z-0 transition-colors duration-200 ease-in-out"
           style={{
             height: `${keyValue() * 100}%`,
             opacity: `${keyValue() * 100}%`,
