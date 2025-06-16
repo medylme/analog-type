@@ -240,7 +240,10 @@ const Settings: Component = () => {
                 checked={showKeyboardVisualizer()}
                 onChange={(e) => setShowKeyboardVisualizer(e.target.checked)}
               />
-              <div class="bg-primary relative h-5 w-9 rounded-full bg-stone-700 duration-200 ease-in-out peer-checked:transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+              <div
+                class="data-[checked=true]:bg-primary relative h-5 w-9 rounded-full bg-stone-700 duration-200 ease-in-out peer-checked:transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"
+                data-checked={showKeyboardVisualizer()}
+              ></div>
             </label>
           </div>
         </div>
