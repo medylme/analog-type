@@ -208,8 +208,8 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
           <p
             class="text-sm font-medium text-white"
             style={{
-              transform:
-                keyValue() > 0 ? "translateY(-1.5px)" : "translateY(0)",
+              //transform:
+              //  keyValue() > 0 ? "translateY(-1.5px)" : "translateY(0)",
               transition: "transform 300ms ease-in-out",
             }}
           >
@@ -217,7 +217,8 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
           </p>
 
           {/* Show depth counter only when key is pressed */}
-          <Show when={keyValue() > 0}>
+          {/*
+               <Show when={keyValue() > 0}>
             <p
               class="absolute text-xs text-white"
               style={{
@@ -228,6 +229,7 @@ const KeyboardVisualizer: Component<KeyboardVisualizerProps> = (props) => {
               {keyValue().toFixed(2)}
             </p>
           </Show>
+            */}
         </div>
       </div>
     );
