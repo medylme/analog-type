@@ -34,7 +34,7 @@ const LandingPage: Component = () => {
         </button>
 
         <p class="text-xs text-stone-500">
-          Built for a Wooting gamejam in a single day.
+          Built in a single day for an internal gamejam at Wooting; will contain jankiness and/or bugs.
         </p>
       </div>
     </div>
